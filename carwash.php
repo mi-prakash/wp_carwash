@@ -16,7 +16,9 @@
  * Domain Path:       /languages
  */
 
-define("CARWASH_ASSETS_DIR", plugin_dir_url(__FILE__) . "assets/");
+require_once('includes/carwashHelper.php');
+
+define('CARWASH_ASSETS_DIR', plugin_dir_url(__FILE__) . 'assets/');
 
 /**
  * Carwash class
@@ -92,7 +94,7 @@ class Carwash
      */
     private function is_secured($nonce_field, $action, $post_id)
     {
-        $nonce = isset($_POST[$nonce_field]) ? $_POST[$nonce_field] : '';
+        $nonce = CarwashHelper::Get($nonce_field);
 
         if ($nonce == '') {
             return false;
@@ -286,7 +288,7 @@ class Carwash
         $args = array('posts_per_page' => -1, 'post_type' => 'car');
         $cars = get_posts($args);
 
-        require_once("includes/metabox/service.php");
+        require_once('includes/metabox/service.php');
     }
 
     /**
@@ -302,17 +304,13 @@ class Carwash
             return $post_id;
         }
 
-        $car_id = isset($_POST['carwash_car_id']) ? $_POST['carwash_car_id'] : 0;
-        $price  = isset($_POST['carwash_price']) ? $_POST['carwash_price'] : 0;
-        $time  = isset($_POST['carwash_time']) ? $_POST['carwash_time'] : 0;
+        $car_id = CarwashHelper::Get('carwash_car_id');
+        $price  = CarwashHelper::Get('carwash_price');
+        $time  = CarwashHelper::Get('carwash_time');
 
         if ($car_id == 0 || $price == 0 || $time == 0) {
             return $post_id;
         }
-
-        $car_id = sanitize_text_field($car_id);
-        $price = sanitize_text_field($price);
-        $time = sanitize_text_field($time);
 
         update_post_meta($post_id, 'carwash_car_id', $car_id);
         update_post_meta($post_id, 'carwash_price', $price);
@@ -461,10 +459,10 @@ class Carwash
         if (!$this->is_secured('carwash_package_token', 'carwash_package', $post_id)) {
             return $post_id;
         }
-        if (!is_array($_POST['carwash_service_ids'])) {
+        if (!is_array(CarwashHelper::Get('carwash_service_ids'))) {
             return $post_id;
         }
-        $service_ids = isset($_POST['carwash_service_ids']) ? $_POST['carwash_service_ids'] : array();
+        $service_ids = CarwashHelper::Get('carwash_service_ids');
 
         if (empty($service_ids)) {
             return $post_id;
