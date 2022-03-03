@@ -7,7 +7,7 @@ class CarwashHelper
      */
     public function __construct()
     {
-
+        // Code here
     }
 
     /**
@@ -37,5 +37,20 @@ class CarwashHelper
         }
         
         return false;
+    }
+
+    /**
+     * Function to view content
+     *
+     * @param string $path
+     * @param array $data
+     * @return void
+     */
+    public static function View($path, $data)
+    {
+        foreach ($data as $key => $value) {
+            $$key = $value;
+        }
+        require_once($path);
     }
 }

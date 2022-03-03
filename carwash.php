@@ -56,6 +56,9 @@ class Carwash
         add_action('save_post', array($this, 'save_package_metadata'));
         add_filter('manage_package_posts_columns', array($this, 'package_custom_column'));
         add_action('manage_package_posts_custom_column' , array($this, 'package_column_populate'), 10, 2);
+
+        // Short code for Frontend Appointment module
+        add_shortcode('carwash_appointment', array($this, 'front_appointment'));
     }
 
     /**
@@ -290,7 +293,16 @@ class Carwash
         $args = array('posts_per_page' => -1, 'post_type' => 'car');
         $cars = get_posts($args);
 
-        require_once('includes/metabox/service.php');
+        $data = array(
+            'saved_car_id' => $saved_car_id,
+            'saved_price' => $saved_price,
+            'saved_time' => $saved_time,
+            'label_car' => $label_car,
+            'label_price' => $label_price,
+            'label_time' => $label_time,
+            'cars' => $cars,
+        );
+        CarwashHelper::View('metabox/service.php', $data);
     }
 
     /**
@@ -446,7 +458,12 @@ class Carwash
         $args = array('posts_per_page' => -1, 'post_type' => 'service');
         $services = get_posts($args);
 
-        require_once("includes/metabox/package.php");
+        $data = array(
+            'saved_service_ids' => $saved_service_ids,
+            'label_service' => $label_service,
+            'services' => $services,
+        );
+        CarwashHelper::View('metabox/package.php', $data);
     }
 
     /**
@@ -510,6 +527,22 @@ class Carwash
                 echo implode(", ", $services);
                 break;
         }
+    }
+
+    /**
+     * Short code Function for frontend Appointment page
+     * [carwash_appointment /]
+     * 
+     * @param array $attributes
+     * @return void
+     */
+    function front_appointment($attributes)
+    {
+        $args = array('posts_per_page' => -1, 'post_type' => 'package');
+        $packages = get_posts($args);
+
+        $data = array('packages' => $packages);
+        CarwashHelper::View('front/appointment/index.php', $data);
     }
 
 }
