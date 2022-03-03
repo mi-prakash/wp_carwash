@@ -527,6 +527,46 @@ class Carwash
         $args = array('posts_per_page' => -1, 'post_type' => 'package');
         $data['packages'] = get_posts($args);
 
+        $i = 0;
+        foreach ($data['packages'] as $package) {
+            // echo "<pre>";
+            // print_r($package);
+            // echo "</pre>";
+
+            // echo "<pre>";
+            // print_r(get_post_meta($package->ID, 'carwash_service_ids'));
+            // echo "</pre>";
+
+            $carwash_service_ids = get_post_meta($package->ID, 'carwash_service_ids', true);
+
+            $services = array();
+
+            $j = 0;
+            foreach ($carwash_service_ids as $carwash_service_id) {
+                $services[] = get_post($carwash_service_id);
+                // $columns['car'] = __('Car', 'carwash');
+                // $columns['price'] = __('Price', 'carwash');
+                // $columns['time'] = __('Required Time', 'carwash');
+                $car_id = get_post_meta($carwash_service_id, 'carwash_car_id', true);
+                $price = get_post_meta($carwash_service_id, 'carwash_price', true);
+                $time = get_post_meta($carwash_service_id, 'carwash_time', true);
+
+                $car = get_post($car_id);
+                $services[$j]->car_name = $car->post_title;
+                $services[$j]->price = $price;
+                $services[$j]->time = $time;
+                $j++;
+            }
+
+            $data['packages'][$i]->services = $services;
+            $i++;
+        }
+
+        echo "<pre>";
+        print_r($data['packages']);
+        echo "</pre>";
+        exit;
+
         CarwashHelper::View('front/appointment/index.php', $data);
     }
 
