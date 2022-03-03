@@ -1,4 +1,3 @@
-# ********* Ignore all except gitignore ********* #
-# /*
+# ********* Files for gitignore ********* #
 !.gitignore
 vendor
