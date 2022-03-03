@@ -1,0 +1,31 @@
+.carwash_form {
+    display: block;
+    width: 100%;
+}
+
+.carwash_form label {
+    display: block;
+    font-weight: bold;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.carwash_form input,
+.carwash_form select,
+.carwash_form textarea {
+    display: block;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.package_meta .btn-grp {
+    text-align: right;
+}
+
+.package_meta .remove {
+    margin-top: -15px;
+}
+
+.wp-image {
+    width: 100px;
+}
