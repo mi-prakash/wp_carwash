@@ -292,7 +292,7 @@ class Carwash
 
         $args = array('posts_per_page' => -1, 'post_type' => 'car');
         $data['cars'] = get_posts($args);
-        
+
         CarwashHelper::View('metabox/service.php', $data);
     }
 
@@ -517,7 +517,7 @@ class Carwash
 
     /**
      * Short code Function for frontend Appointment page
-     * [carwash_appointment /]
+     * Short code => [carwash_appointment /]
      * 
      * @param array $attributes
      * @return void
