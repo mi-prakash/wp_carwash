@@ -282,26 +282,17 @@ class Carwash
      */
     function carwash_display_post_service($post)
     {
-        $saved_car_id = get_post_meta($post->ID, 'carwash_car_id', true);
-        $saved_price = get_post_meta($post->ID, 'carwash_price', true);
-        $saved_time = get_post_meta($post->ID, 'carwash_time', true);
-        $label_car = __('Car', 'carwash');
-        $label_price = __('Price (USD)', 'carwash');
-        $label_time = __('Required Time (mins)', 'carwash');
+        $data['saved_car_id'] = get_post_meta($post->ID, 'carwash_car_id', true);
+        $data['saved_price'] = get_post_meta($post->ID, 'carwash_price', true);
+        $data['saved_time'] = get_post_meta($post->ID, 'carwash_time', true);
+        $data['label_car'] = __('Car', 'carwash');
+        $data['label_price'] = __('Price (USD)', 'carwash');
+        $data['label_time'] = __('Required Time (mins)', 'carwash');
         wp_nonce_field('carwash_service', 'carwash_service_token');
 
         $args = array('posts_per_page' => -1, 'post_type' => 'car');
-        $cars = get_posts($args);
-
-        $data = array(
-            'saved_car_id' => $saved_car_id,
-            'saved_price' => $saved_price,
-            'saved_time' => $saved_time,
-            'label_car' => $label_car,
-            'label_price' => $label_price,
-            'label_time' => $label_time,
-            'cars' => $cars,
-        );
+        $data['cars'] = get_posts($args);
+        
         CarwashHelper::View('metabox/service.php', $data);
     }
 
@@ -451,18 +442,13 @@ class Carwash
      */
     function carwash_display_post_package($post)
     {
-        $saved_service_ids = get_post_meta($post->ID, 'carwash_service_ids', true);
-        $label_service = __('Service', 'carwash');
+        $data['saved_service_ids'] = get_post_meta($post->ID, 'carwash_service_ids', true);
+        $data['label_service'] = __('Service', 'carwash');
         wp_nonce_field('carwash_package', 'carwash_package_token');
 
         $args = array('posts_per_page' => -1, 'post_type' => 'service');
-        $services = get_posts($args);
+        $data['services'] = get_posts($args);
 
-        $data = array(
-            'saved_service_ids' => $saved_service_ids,
-            'label_service' => $label_service,
-            'services' => $services,
-        );
         CarwashHelper::View('metabox/package.php', $data);
     }
 
@@ -539,9 +525,8 @@ class Carwash
     function front_appointment($attributes)
     {
         $args = array('posts_per_page' => -1, 'post_type' => 'package');
-        $packages = get_posts($args);
+        $data['packages'] = get_posts($args);
 
-        $data = array('packages' => $packages);
         CarwashHelper::View('front/appointment/index.php', $data);
     }
 
