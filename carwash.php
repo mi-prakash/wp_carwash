@@ -73,8 +73,12 @@ class Carwash
     {
         $this_screen = get_current_screen();
         if ($this_screen->post_type == 'car' || $this_screen->post_type == 'service' || $this_screen->post_type == 'package') {
-            wp_enqueue_style('carwash-main-css', CARWASH_ASSETS_DIR . "admin/css/style.css", null, '1.0');
-            wp_enqueue_script('carwash-main-js', CARWASH_ASSETS_DIR . "admin/js/main.js", array('jquery'), '1.0', true);
+            wp_enqueue_style('carwash-main-css', CARWASH_ASSETS_DIR . 'admin/css/style.css', null, '1.0');
+            wp_enqueue_script('carwash-main-js', CARWASH_ASSETS_DIR . 'admin/js/main.js', array('jquery'), '1.0', true);
+
+            // Pass data to js file
+            $data = array('confirm_text' => __('Are you sure?', 'carwash'));
+            wp_localize_script('carwash-main-js', 'carwash_info', $data);
         }
     }
 
