@@ -1,4 +1,5 @@
 <?php
+namespace Carwash;
 class CarwashHelper 
 {
     /**
@@ -10,12 +11,12 @@ class CarwashHelper
     }
 
     /**
-     * Function to get request data and process it
+     * Function to get input request data and process it
      *
      * @param string $request
      * @param boolean $trim
      */
-    public static function Get($request, $trim = true)
+    public static function Input($request, $trim = true)
     {
         if ($_POST) {
             if (is_array($_POST[$request])) {

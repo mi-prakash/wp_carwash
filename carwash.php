@@ -16,7 +16,9 @@
  * Domain Path:       /languages
  */
 
-require_once('includes/carwashHelper.php');
+require_once('vendor/autoload.php');
+
+use Carwash\CarwashHelper;
 
 define('CARWASH_ASSETS_DIR', plugin_dir_url(__FILE__) . 'assets/');
 
@@ -94,7 +96,7 @@ class Carwash
      */
     private function is_secured($nonce_field, $action, $post_id)
     {
-        $nonce = CarwashHelper::Get($nonce_field);
+        $nonce = CarwashHelper::Input($nonce_field);
 
         if ($nonce == '') {
             return false;
@@ -304,9 +306,9 @@ class Carwash
             return $post_id;
         }
 
-        $car_id = CarwashHelper::Get('carwash_car_id');
-        $price  = CarwashHelper::Get('carwash_price');
-        $time  = CarwashHelper::Get('carwash_time');
+        $car_id = CarwashHelper::Input('carwash_car_id');
+        $price = CarwashHelper::Input('carwash_price');
+        $time = CarwashHelper::Input('carwash_time');
 
         if ($car_id == 0 || $price == 0 || $time == 0) {
             return $post_id;
@@ -459,10 +461,10 @@ class Carwash
         if (!$this->is_secured('carwash_package_token', 'carwash_package', $post_id)) {
             return $post_id;
         }
-        if (!is_array(CarwashHelper::Get('carwash_service_ids'))) {
+        if (!is_array(CarwashHelper::Input('carwash_service_ids'))) {
             return $post_id;
         }
-        $service_ids = CarwashHelper::Get('carwash_service_ids');
+        $service_ids = CarwashHelper::Input('carwash_service_ids');
 
         if (empty($service_ids)) {
             return $post_id;
