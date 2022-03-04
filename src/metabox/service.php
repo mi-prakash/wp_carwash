@@ -18,7 +18,7 @@
     </select>
 
     <label for="carwash_price"><?= $label_price ?></label>
-    <input type="number" name="carwash_price" id="carwash_price" value="<?= $saved_price ?>" />
+    <input type="number" name="carwash_price" id="carwash_price" step=".10" value="<?= $saved_price ?>" />
 
     <label for="carwash_time"><?= $label_time ?></label>
     <input type="number" name="carwash_time" id="carwash_time" value="<?= $saved_time ?>" />

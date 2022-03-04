@@ -29,13 +29,17 @@ define('CARWASH_ASSETS_DIR', plugin_dir_url(__FILE__) . 'assets/');
  */
 class Carwash
 {
+    private $version;
     /**
      * Construct function
      */
     public function __construct()
     {
-        // Initialize with loading textdomain & assets
+        $this->version = time();
+        // Initialize with loading textdomain
         add_action('plugins_loaded', array($this, 'load_textdomain'));
+
+        // Load assets on Admin
         add_action('admin_enqueue_scripts', array($this, 'load_admin_assets'));
 
         // Custom post Car
@@ -56,6 +60,9 @@ class Carwash
         add_action('save_post', array($this, 'save_package_metadata'));
         add_filter('manage_package_posts_columns', array($this, 'package_custom_column'));
         add_action('manage_package_posts_custom_column' , array($this, 'package_column_populate'), 10, 2);
+
+        // Load assets on Frontend
+        add_action('wp_enqueue_scripts', array($this, 'load_front_assets'));
 
         // Short code for Frontend Appointment module
         add_shortcode('carwash_appointment', array($this, 'front_appointment'));
@@ -80,13 +87,33 @@ class Carwash
     {
         $this_screen = get_current_screen();
         if ($this_screen->post_type == 'car' || $this_screen->post_type == 'service' || $this_screen->post_type == 'package') {
-            wp_enqueue_style('carwash-main-css', CARWASH_ASSETS_DIR . 'admin/css/style.css', null, '1.0');
-            wp_enqueue_script('carwash-main-js', CARWASH_ASSETS_DIR . 'admin/js/main.js', array('jquery'), '1.0', true);
+            wp_enqueue_style('carwash-main-css', CARWASH_ASSETS_DIR . 'admin/css/style.css', null, $this->version);
+            wp_enqueue_script('carwash-main-js', CARWASH_ASSETS_DIR . 'admin/js/main.js', array('jquery'), $this->version, true);
 
             // Pass data to js file
             $data = array('confirm_text' => __('Are you sure?', 'carwash'));
             wp_localize_script('carwash-main-js', 'carwash_info', $data);
         }
+    }
+
+    /**
+     * Function to load necessary assets in Frontend
+     *
+     * @return void
+     */
+    function load_front_assets()
+    {
+        // Loading Bootstrap 5 css
+        wp_enqueue_style('carwash-bootstrap-css', CARWASH_ASSETS_DIR . 'public/css/bootstrap.min.css', null, $this->version);
+        // Loading Bootstrap 5 js
+        wp_enqueue_script('carwash-bootstrap-js', CARWASH_ASSETS_DIR . 'public/js/bootstrap.min.js', array('jquery'), $this->version, true);
+
+        wp_enqueue_style('carwash-front-main-css', CARWASH_ASSETS_DIR . 'public/css/style.css', null, $this->version);
+        wp_enqueue_script('carwash-front-main-js', CARWASH_ASSETS_DIR . 'public/js/main.js', array('jquery'), $this->version, true);
+
+        // Pass data to js file
+        $data = array('confirm_text' => __('Are you sure?', 'carwash'));
+        wp_localize_script('carwash-front-main-js', 'carwash_info', $data);
     }
 
     /**
@@ -358,7 +385,12 @@ class Carwash
                 break;
         
             case 'price':
-                echo '$'.number_format(get_post_meta($post_id, 'carwash_price', true), 2);
+                $price = get_post_meta($post_id, 'carwash_price', true);
+                if (is_numeric($price)) {
+                    echo '$'.number_format(get_post_meta($post_id, 'carwash_price', true), 2);
+                } else {
+                    echo '$'.number_format(0, 2);
+                }
                 break;
 
             case 'time':
@@ -529,28 +561,15 @@ class Carwash
 
         $i = 0;
         foreach ($data['packages'] as $package) {
-            // echo "<pre>";
-            // print_r($package);
-            // echo "</pre>";
-
-            // echo "<pre>";
-            // print_r(get_post_meta($package->ID, 'carwash_service_ids'));
-            // echo "</pre>";
-
             $carwash_service_ids = get_post_meta($package->ID, 'carwash_service_ids', true);
-
             $services = array();
 
             $j = 0;
             foreach ($carwash_service_ids as $carwash_service_id) {
                 $services[] = get_post($carwash_service_id);
-                // $columns['car'] = __('Car', 'carwash');
-                // $columns['price'] = __('Price', 'carwash');
-                // $columns['time'] = __('Required Time', 'carwash');
                 $car_id = get_post_meta($carwash_service_id, 'carwash_car_id', true);
                 $price = get_post_meta($carwash_service_id, 'carwash_price', true);
                 $time = get_post_meta($carwash_service_id, 'carwash_time', true);
-
                 $car = get_post($car_id);
                 $services[$j]->car_name = $car->post_title;
                 $services[$j]->price = $price;
@@ -561,13 +580,10 @@ class Carwash
             $data['packages'][$i]->services = $services;
             $i++;
         }
-
-        echo "<pre>";
-        print_r($data['packages']);
-        echo "</pre>";
-        exit;
-
+        
+        ob_start();
         CarwashHelper::View('front/appointment/index.php', $data);
+        return ob_get_clean();
     }
 
 }
