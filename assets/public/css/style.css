@@ -1,0 +1,12 @@
+.carwash-appointment .table-appointment {
+    font-size: 10px;
+}
+
+#appointmentModal .modal-body {
+    font-size: 12px;
+}
+
+#appointmentModal .modal-body input,
+#appointmentModal .modal-body select {
+    padding: 4px;
+}
