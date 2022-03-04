@@ -66,8 +66,8 @@
                 <div class="modal-body text-secondary">
                     <div class="row mb-3">
                         <p class="mb-1"><b class="text-dark"><?= __('Selected Package', 'carwash') ?></b>: <span class="text-secondary pack-name"></span></p>
-                        <p class="mb-1"><b class="text-dark"><?= __('Total Price', 'carwash') ?></b>: <span class="text-secondary pack-price">$00.00</span></p>
-                        <p class="mb-1"><b class="text-dark"><?= __('Required Time', 'carwash') ?></b>: <span class="text-secondary pack-time">00 mins</span></p>
+                        <p class="mb-1"><b class="text-dark"><?= __('Total Price', 'carwash') ?></b>: $<span class="text-secondary pack-price">00.00</span></p>
+                        <p class="mb-1"><b class="text-dark"><?= __('Required Time', 'carwash') ?></b>: <span class="text-secondary pack-time">00</span> mins</p>
                     </div>
                     <input type="hidden" class="pack-id" name="package_id" value="0">
                     <label class="form-label text-secondary"><?= __('Customer Name', 'carwash') ?></label>
