@@ -40,8 +40,7 @@
                                 <th class="text-end pe-1"><?= $total_time ?> mins</th>
                             </tfoot>
                         </table>
-                        <input type="hidden"  >
-                        <button type="button" class="btn btn-dark btn-sm w-100 bg-dark text-warning" data-bs-toggle="modal" data-bs-target="#appointmentModal"><?= __('Make Appointment', 'carwash') ?></button>
+                        <button type="button" class="btn btn-dark btn-sm w-100 bg-dark text-warning apt-btn" data-bs-toggle="modal" data-bs-target="#appointmentModal" data-id="<?= $package->ID ?>" data-pack-name="<?= $package->post_title; ?>" data-price="<?= number_format($total_price, 2) ?>" data-time="<?= $total_time ?>"><?= __('Make Appointment', 'carwash') ?></button>
                     </div>
                 </div>
             </div>
@@ -58,33 +57,34 @@
 </div>
 <!-- Modal -->
 <div class="modal fade" id="appointmentModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="appointmentModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title text-dark" id="appointmentModalLabel">Modal title</h5>
             </div>
-            <div class="modal-body text-secondary">
-                <div class="row mb-3">
-                    <p class="mb-1"><b class="text-dark"><?= __('Selected Package', 'carwash') ?></b>: Package Name<span class="text-secondary pack-name"></span></p>
-                    <p class="mb-1"><b class="text-dark"><?= __('Total Price', 'carwash') ?></b>: <span class="text-secondary pack-price">$00.00</span></p>
-                    <p class="mb-1"><b class="text-dark"><?= __('Required Time', 'carwash') ?></b>: <span class="text-secondary pack-time">00 mins</span></p>
-                </div>
-                <form method="POST">
+            <form method="POST">
+                <div class="modal-body text-secondary">
+                    <div class="row mb-3">
+                        <p class="mb-1"><b class="text-dark"><?= __('Selected Package', 'carwash') ?></b>: <span class="text-secondary pack-name"></span></p>
+                        <p class="mb-1"><b class="text-dark"><?= __('Total Price', 'carwash') ?></b>: <span class="text-secondary pack-price">$00.00</span></p>
+                        <p class="mb-1"><b class="text-dark"><?= __('Required Time', 'carwash') ?></b>: <span class="text-secondary pack-time">00 mins</span></p>
+                    </div>
                     <input type="hidden" class="pack-id" name="package_id" value="0">
-                    <label class="form-label text-secondary">Customer Name</label>
+                    <label class="form-label text-secondary"><?= __('Customer Name', 'carwash') ?></label>
                     <input type="text" class="form-control form-control-sm bg-light text-secondary mb-2 customer_name" name="customer_name" required="">
-                    <label class="form-label text-secondary">Email</label>
+                    <label class="form-label text-secondary"><?= __('Email', 'carwash') ?></label>
                     <input type="email" class="form-control form-control-sm bg-light text-secondary mb-2 email" name="email" required="">
-                    <label class="form-label text-secondary">Appointment Date</label>
-                    <input type="date" class="form-control form-control-sm bg-light text-secondary mb-2 apt_date" name="apt_date" min="2022-03-04" required="">
-                    <label class="form-label text-secondary">Appointment Time</label>
+                    <label class="form-label text-secondary"><?= __('Appointment Date', 'carwash') ?></label>
+                    <input type="date" class="form-control form-control-sm bg-light text-secondary mb-2 apt_date" name="apt_date" min="<?= date('Y-m-d'); ?>" required="">
+                    <label class="form-label text-secondary"><?= __('Appointment Time', 'carwash') ?></label>
                     <input type="time" class="form-control form-control-sm bg-light text-secondary mb-2 apt_time" name="apt_time" required="">
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger btn-sm bg-danger text-light" data-bs-dismiss="modal"><?= __('Cancel', 'carwash') ?></button>
-                <button type="button" class="btn btn-dark btn-sm bg-dark text-warning"><?= __('Submit', 'carwash') ?></button>
-            </div>
+                    <input type="hidden" class="r_time" name="time" value="">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger btn-sm bg-danger text-light" data-bs-dismiss="modal"><?= __('Cancel', 'carwash') ?></button>
+                    <button type="submit" class="btn btn-dark btn-sm bg-dark text-warning btn-submit"><?= __('Submit', 'carwash') ?></button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
