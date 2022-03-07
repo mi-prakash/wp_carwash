@@ -33,17 +33,36 @@
 		$("#appointmentModal form").on("submit", function(e) {
 			e.preventDefault();
 			var data = "action=carwash_add_appointment&" + $(this).serialize();
+			var close_btn = $("#appointmentModal .btn-exit");
+			var submit_btn = $("#appointmentModal .btn-submit");
 			$.ajax({
 				url: carwash_info.ajax_url,
 				type: 'POST',
 				data: data,
+				beforeSend: function() {
+					close_btn.attr('disabled', 'disabled');
+					submit_btn.attr('disabled', 'disabled');
+					submit_btn.text('Processing...');
+				},			
 				success: function (response) {
 					console.log(response);
 					var obj = JSON.parse(response);
 					if (obj.success) {
-						console.log(obj.message);
+						$("#appointmentModal .modal-body").html('<h4 class="text-success text-center py-5">'+obj.message+'</h4>');
+						setTimeout(function() {
+							close_btn.removeAttr('disabled');
+							submit_btn.removeAttr('disabled');
+							submit_btn.text('Submit');
+							close_btn.click();
+						}, 5000);
 					} else {
-						console.log(obj.message);
+						$("#appointmentModal .modal-body").html('<h4 class="text-danger text-center py-5">'+obj.message+'</h4>');
+						setTimeout(function() {
+							close_btn.removeAttr('disabled');
+							submit_btn.removeAttr('disabled');
+							submit_btn.text('Submit');
+							close_btn.click();
+						}, 5000);
 					}
 				}
 			});

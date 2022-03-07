@@ -83,7 +83,7 @@
                     <input type="hidden" class="r_time" name="time" value="">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger btn-sm bg-danger text-light" data-bs-dismiss="modal"><?= __('Cancel', 'carwash') ?></button>
+                    <button type="button" class="btn btn-danger btn-sm bg-danger text-light btn-exit" data-bs-dismiss="modal"><?= __('Cancel', 'carwash') ?></button>
                     <button type="submit" class="btn btn-dark btn-sm bg-dark text-warning btn-submit"><?= __('Submit', 'carwash') ?></button>
                 </div>
             </form>
