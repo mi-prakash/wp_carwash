@@ -69,6 +69,7 @@
                         <p class="mb-1"><b class="text-dark"><?= __('Total Price', 'carwash') ?></b>: $<span class="text-secondary pack-price">00.00</span></p>
                         <p class="mb-1"><b class="text-dark"><?= __('Required Time', 'carwash') ?></b>: <span class="text-secondary pack-time">00</span> mins</p>
                     </div>
+                    <?php wp_nonce_field('carwash_front_appointment', 'carwash_appointment_token'); ?>
                     <input type="hidden" class="pack-id" name="package_id" value="0">
                     <label class="form-label text-secondary"><?= __('Customer Name', 'carwash') ?></label>
                     <input type="text" class="form-control form-control-sm bg-light text-secondary mb-2 customer_name" name="customer_name" required="">
@@ -78,6 +79,7 @@
                     <input type="date" class="form-control form-control-sm bg-light text-secondary mb-2 apt_date" name="apt_date" min="<?= date('Y-m-d'); ?>" required="">
                     <label class="form-label text-secondary"><?= __('Appointment Time', 'carwash') ?></label>
                     <input type="time" class="form-control form-control-sm bg-light text-secondary mb-2 apt_time" name="apt_time" required="">
+                    <input type="hidden" class="r_price" name="price" value="">
                     <input type="hidden" class="r_time" name="time" value="">
                 </div>
                 <div class="modal-footer">

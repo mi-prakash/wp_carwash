@@ -61,11 +61,22 @@ class Carwash
         add_filter('manage_package_posts_columns', array($this, 'package_custom_column'));
         add_action('manage_package_posts_custom_column' , array($this, 'package_column_populate'), 10, 2);
 
+        // Custom post Appointment
+        add_action('init', array($this, 'register_appointment'));
+        add_action('add_meta_boxes', array($this, 'add_appointment_metabox'));
+        add_action('save_post', array($this, 'save_appointment_metadata'));
+        add_filter('manage_appointment_posts_columns', array($this, 'appointment_custom_column'));
+        add_action('manage_appointment_posts_custom_column' , array($this, 'appointment_column_populate'), 10, 2);
+
         // Load assets on Frontend
         add_action('wp_enqueue_scripts', array($this, 'load_front_assets'));
 
         // Short code for Frontend Appointment module
         add_shortcode('carwash_appointment', array($this, 'front_appointment'));
+
+        // Ajax action for Appointment
+        add_action('wp_ajax_carwash_add_appointment', array($this, 'carwash_add_appointment'));
+        add_action('wp_ajax_nopriv_carwash_add_appointment', array($this, 'carwash_add_appointment'));
     }
 
     /**
@@ -86,7 +97,7 @@ class Carwash
     function load_admin_assets()
     {
         $this_screen = get_current_screen();
-        if ($this_screen->post_type == 'car' || $this_screen->post_type == 'service' || $this_screen->post_type == 'package') {
+        if ($this_screen->post_type == 'car' || $this_screen->post_type == 'service' || $this_screen->post_type == 'package' || $this_screen->post_type == 'appointment') {
             wp_enqueue_style('carwash-main-css', CARWASH_ASSETS_DIR . 'admin/css/style.css', null, $this->version);
             wp_enqueue_script('carwash-main-js', CARWASH_ASSETS_DIR . 'admin/js/main.js', array('jquery'), $this->version, true);
 
@@ -112,7 +123,10 @@ class Carwash
         wp_enqueue_script('carwash-front-main-js', CARWASH_ASSETS_DIR . 'public/js/main.js', array('jquery'), $this->version, true);
 
         // Pass data to js file
-        $data = array('confirm_text' => __('Are you sure?', 'carwash'));
+        $data = array(
+            'ajax_url'      => admin_url('admin-ajax.php'),
+            'confirm_text'  => __('Are you sure?', 'carwash')
+        );
         wp_localize_script('carwash-front-main-js', 'carwash_info', $data);
     }
 
@@ -548,6 +562,208 @@ class Carwash
     }
 
     /**
+     * Function to register Appointment as a custom Post type
+     *
+     * @return void
+     */
+    function register_appointment()
+    {
+        $labels = [
+            "name"                  => __("Appointments", "carwash"),
+            "singular_name"         => __("Appointment", "carwash"),
+            "all_items"             => __("All Appointments", "carwash"),
+            "add_new"               => __("Add New Appointment", "carwash"),
+            "add_new_item"          => __("Add New Appointment", "carwash"),
+            "edit_item"             => __("Edit Appointment", "carwash"),
+            "new_item"              => __("New Appointment", "carwash"),
+            "view_item"             => __("View Appointment", "carwash"),
+            "view_items"            => __("View Appointments", "carwash"),
+            "search_items"          => __("Search Appointment", "carwash"),
+        ];
+
+        $args = [
+            "label"                 => __("Appointments", "carwash"),
+            "labels"                => $labels,
+            "description"           => "",
+            "public"                => true,
+            "publicly_queryable"    => true,
+            "show_ui"               => true,
+            "show_in_rest"          => true,
+            "rest_base"             => "",
+            "rest_controller_class" => "WP_REST_Posts_Controller",
+            "has_archive"           => true,
+            "show_in_menu"          => true,
+            "show_in_nav_menus"     => true,
+            "delete_with_user"      => false,
+            "exclude_from_search"   => false,
+            "capability_type"       => "post",
+            'capabilities'          => array('create_posts' => false), // Removes support for the "Add New"
+            "map_meta_cap"          => true,
+            "hierarchical"          => false,
+            "rewrite"               => array("slug" => "appointment", "with_front" => true),
+            "query_var"             => true,
+            "menu_icon"             => "dashicons-list-view",
+            "supports"              => array(""),
+            "show_in_graphql"       => false,
+        ];
+
+        register_post_type("appointment", $args);
+    }
+
+    /**
+     * Function to set Appointment columns
+     *
+     * @param array $columns
+     * @return array
+     */
+    function appointment_custom_column($columns)
+    {
+        unset($columns['title']);
+        unset($columns['author']);
+        unset($columns['date']);
+
+        $columns['title'] = __('Apt. No', 'carwash');
+        $columns['package_name'] = __('Package Name', 'carwash');
+        $columns['customer_name'] = __('Customer Name', 'carwash');
+        // $columns['email'] = __('Email', 'carwash');
+        $columns['apt_date_time'] = __('Apt. Datetime', 'carwash');
+        // $columns['price'] = __('Total Price', 'carwash');
+        // $columns['time'] = __('Total Time', 'carwash');
+        $columns['status'] = __('Status', 'carwash');
+        $columns['date'] = __('Date', 'carwash');
+
+        return $columns;
+    }
+
+    /**
+     * Function to populate Appointment columns
+     *
+     * @param array $column
+     * @param int $post_id
+     * @return void
+     */
+    function appointment_column_populate($column, $post_id)
+    {
+        switch ($column) {
+            case 'package_name':
+                $package_id = get_post_meta($post_id, 'carwash_package_id', true);
+                echo get_post_field('post_title', $package_id);
+                break;
+            case 'customer_name':
+                echo get_post_meta($post_id, 'carwash_customer_name', true);
+                break;
+            case 'email':
+                echo get_post_meta($post_id, 'carwash_email', true);
+                break;
+            case 'apt_date_time':
+                $apt_date = get_post_meta($post_id, 'carwash_apt_date', true);
+                $apt_time = get_post_meta($post_id, 'carwash_apt_time', true);
+                echo date('d/m/Y', strtotime($apt_date)) . '<br>' . date('h:i A', strtotime($apt_time));
+                break;
+            case 'price':
+                $price = get_post_meta($post_id, 'carwash_price', true);
+                echo is_numeric($price) ? '$'.number_format($price, 2) : '$0.00';
+                break;
+            case 'time':
+                $time = get_post_meta($post_id, 'carwash_time', true);
+                echo is_numeric($time) ? $time.' mins' : '00 mins';
+                break;
+            case 'status':
+                $status = get_post_meta($post_id, 'carwash_status', true);
+                $class_name = '';
+                if ($status == 'pending') {
+                    $class_name = 'text-danger';
+                } elseif ($status == 'processing') {
+                    $class_name = 'text-primary';
+                } elseif ($status == 'completed') {
+                    $class_name = 'text-success';
+                }
+                echo '<span class="'.$class_name.'">'.ucfirst($status).'</span>';
+                break;
+        }
+    }
+
+    /**
+     * Function to add Metabox for Appointment
+     *
+     * @return void
+     */
+    function add_appointment_metabox()
+    {
+        add_meta_box(
+            'carwash_post_appointment',
+            __('Appointment Details', 'carwash'),
+            array($this, 'carwash_display_post_appointment'),
+            array('appointment')
+        );
+    }
+
+    /**
+     * Function to display Appointment Metabox
+     *
+     * @param object $post
+     * @return void
+     */
+    function carwash_display_post_appointment($post)
+    {
+        $data['apt_no'] = get_post_field('post_title', $post->ID);
+        $data['label_apt_no'] = __('Apt. No', 'carwash');
+
+        $package_id = get_post_meta($post->ID, 'carwash_package_id', true);
+        $data['package_name'] = get_post_field('post_title', $package_id);
+        $data['label_package_name'] = __('Package Name', 'carwash');
+
+        $data['customer_name'] = get_post_meta($post->ID, 'carwash_customer_name', true);
+        $data['label_customer_name'] = __('Customer Name', 'carwash');
+
+        $data['email'] = get_post_meta($post->ID, 'carwash_email', true);
+        $data['label_email'] = __('Email', 'carwash');
+
+        $data['apt_date'] = date('d/m/Y', strtotime(get_post_meta($post->ID, 'carwash_apt_date', true)));
+        $data['apt_time'] = date('h:i A', strtotime(get_post_meta($post->ID, 'carwash_apt_time', true)));
+        $data['label_apt_datetime'] = __('Appointment Datetime', 'carwash');
+
+        $price = get_post_meta($post->ID, 'carwash_price', true);
+        $data['price'] = is_numeric($price) ? '$'.number_format($price, 2) : '$0.00';
+        $data['label_price'] = __('Total Price', 'carwash');
+
+        $time = get_post_meta($post->ID, 'carwash_time', true);
+        $data['time'] = is_numeric($time) ? $time.' mins' : '00 mins';
+        $data['label_time'] = __('Total Time', 'carwash');
+
+        $data['status'] = get_post_meta($post->ID, 'carwash_status', true);
+        $data['label_status'] = __('status', 'carwash');
+
+        wp_nonce_field('carwash_appointment', 'carwash_appointment_token');
+
+        $data['status_fields'] = CarwashHelper::GetAppointmentStatusFields();
+
+        CarwashHelper::View('metabox/appointment.php', $data);
+    }
+
+    /**
+     * Function to save Appointment Metadata
+     *
+     * @param int $post_id
+     * @return void
+     */
+    function save_appointment_metadata($post_id)
+    {
+
+        if (!$this->is_secured('carwash_appointment_token', 'carwash_appointment', $post_id)) {
+            return $post_id;
+        }
+
+        $status = CarwashHelper::Input('carwash_status');
+
+        if (empty($status)) {
+            return $post_id;
+        }
+
+        update_post_meta($post_id, 'carwash_status', $status);
+    }
+
+    /**
      * Short code Function for frontend Appointment page
      * Short code => [carwash_appointment /]
      * 
@@ -584,6 +800,51 @@ class Carwash
         ob_start();
         CarwashHelper::View('front/appointment/index.php', $data);
         return ob_get_clean();
+    }
+
+    function carwash_add_appointment()
+    {
+        $package_id = CarwashHelper::Input('package_id');
+        $customer_name = CarwashHelper::Input('customer_name');
+        $email = CarwashHelper::Input('email');
+        $apt_date = CarwashHelper::Input('apt_date');
+        $apt_time = CarwashHelper::Input('apt_time');
+        $price = CarwashHelper::Input('price');
+        $time = CarwashHelper::Input('time');
+        $status = 'pending';
+        
+        if (!$this->is_secured('carwash_appointment_token', 'carwash_front_appointment', $package_id)) {
+            $response = array(
+                'success'   => false,
+                'message'   => __('Token verification failed!', 'carwash')
+            );
+            echo json_encode($response);
+        } else {
+            // create post object with the form values
+            $args = array(
+                'post_title'    => 'Appointment#' . strtoupper(uniqid()),
+                'post_status'   => 'publish',
+                'post_type'     => 'appointment'
+                );
+            $appointment_id = wp_insert_post($args);
+
+            update_post_meta($appointment_id, 'carwash_package_id', $package_id);
+            update_post_meta($appointment_id, 'carwash_customer_name', $customer_name);
+            update_post_meta($appointment_id, 'carwash_email', $email);
+            update_post_meta($appointment_id, 'carwash_apt_date', $apt_date);
+            update_post_meta($appointment_id, 'carwash_apt_time', $apt_time);
+            update_post_meta($appointment_id, 'carwash_price', $price);
+            update_post_meta($appointment_id, 'carwash_time', $time);
+            update_post_meta($appointment_id, 'carwash_status', $status);
+
+            $response = array(
+                'success'   => true,
+                'message'   => __('Successfully submitted!', 'carwash')
+            );
+            echo json_encode($response);
+        }
+
+        exit;
     }
 
 }

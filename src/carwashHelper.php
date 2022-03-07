@@ -53,4 +53,19 @@ class CarwashHelper
         }
         require_once($path);
     }
+
+    /**
+     * Function for returning default Appointment Status fields
+     *
+     * @return array
+     */
+    public static function GetAppointmentStatusFields() {
+        $result = array(
+            'pending'       => 'Pending',
+            'processing'    => 'Processing',
+            'completed'     => 'Completed'
+        );
+        
+        return $result;
+    }
 }
