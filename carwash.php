@@ -77,6 +77,7 @@ class Carwash
         // Ajax action for Appointment
         add_action('wp_ajax_carwash_add_appointment', array($this, 'carwash_add_appointment'));
         add_action('wp_ajax_nopriv_carwash_add_appointment', array($this, 'carwash_add_appointment'));
+        add_action('send_customer_email', array($this, 'send_customer_email'));
     }
 
     /**
@@ -94,7 +95,7 @@ class Carwash
      *
      * @return void
      */
-    function load_admin_assets()
+    public function load_admin_assets()
     {
         $this_screen = get_current_screen();
         if ($this_screen->post_type == 'car' || $this_screen->post_type == 'service' || $this_screen->post_type == 'package' || $this_screen->post_type == 'appointment') {
@@ -112,7 +113,7 @@ class Carwash
      *
      * @return void
      */
-    function load_front_assets()
+    public function load_front_assets()
     {
         // Loading Bootstrap 5 css
         wp_enqueue_style('carwash-bootstrap-css', CARWASH_ASSETS_DIR . 'public/css/bootstrap.min.css', null, $this->version);
@@ -165,7 +166,7 @@ class Carwash
      *
      * @return void
      */
-    function register_car()
+    public function register_car()
     {
         $labels = [
             "name"                  => __("Cars", "carwash"),
@@ -218,7 +219,7 @@ class Carwash
      * @param array $columns
      * @return array
      */
-    function car_custom_column($columns)
+    public function car_custom_column($columns)
     {
         unset($columns['title']);
         unset($columns['author']);
@@ -239,7 +240,7 @@ class Carwash
      * @param int $post_id
      * @return void
      */
-    function car_column_populate($column, $post_id)
+    public function car_column_populate($column, $post_id)
     {
         switch ($column) {
             case 'image':
@@ -253,7 +254,7 @@ class Carwash
      *
      * @return void
      */
-    function register_service()
+    public function register_service()
     {
         $labels = [
             "name"                  => __("Services", "carwash"),
@@ -305,7 +306,7 @@ class Carwash
      *
      * @return void
      */
-    function add_service_metabox()
+    public function add_service_metabox()
     {
         add_meta_box(
             'carwash_post_service',
@@ -321,7 +322,7 @@ class Carwash
      * @param object $post
      * @return void
      */
-    function carwash_display_post_service($post)
+    public function carwash_display_post_service($post)
     {
         $data['saved_car_id'] = get_post_meta($post->ID, 'carwash_car_id', true);
         $data['saved_price'] = get_post_meta($post->ID, 'carwash_price', true);
@@ -343,7 +344,7 @@ class Carwash
      * @param int $post_id
      * @return void
      */
-    function save_service_metadata($post_id)
+    public function save_service_metadata($post_id)
     {
 
         if (!$this->is_secured('carwash_service_token', 'carwash_service', $post_id)) {
@@ -369,7 +370,7 @@ class Carwash
      * @param array $columns
      * @return array
      */
-    function service_custom_column($columns)
+    public function service_custom_column($columns)
     {
         unset($columns['author']);
         unset($columns['date']);
@@ -390,7 +391,7 @@ class Carwash
      * @param int $post_id
      * @return void
      */
-    function service_column_populate($column, $post_id)
+    public function service_column_populate($column, $post_id)
     {
         switch ($column) {
             case 'car':
@@ -418,7 +419,7 @@ class Carwash
      *
      * @return void
      */
-    function register_package()
+    public function register_package()
     {
         $labels = [
             "name"                  => __("Packages", "carwash"),
@@ -470,7 +471,7 @@ class Carwash
      *
      * @return void
      */
-    function add_package_metabox()
+    public function add_package_metabox()
     {
         add_meta_box(
             'carwash_post_package',
@@ -486,7 +487,7 @@ class Carwash
      * @param object $post
      * @return void
      */
-    function carwash_display_post_package($post)
+    public function carwash_display_post_package($post)
     {
         $data['saved_service_ids'] = get_post_meta($post->ID, 'carwash_service_ids', true);
         $data['label_service'] = __('Service', 'carwash');
@@ -504,7 +505,7 @@ class Carwash
      * @param int $post_id
      * @return void
      */
-    function save_package_metadata($post_id)
+    public function save_package_metadata($post_id)
     {
 
         if (!$this->is_secured('carwash_package_token', 'carwash_package', $post_id)) {
@@ -528,7 +529,7 @@ class Carwash
      * @param array $columns
      * @return array
      */
-    function package_custom_column($columns)
+    public function package_custom_column($columns)
     {
         unset($columns['author']);
         unset($columns['date']);
@@ -547,7 +548,7 @@ class Carwash
      * @param int $post_id
      * @return void
      */
-    function package_column_populate($column, $post_id)
+    public function package_column_populate($column, $post_id)
     {
         switch ($column) {
             case 'services':
@@ -566,7 +567,7 @@ class Carwash
      *
      * @return void
      */
-    function register_appointment()
+    public function register_appointment()
     {
         $labels = [
             "name"                  => __("Appointments", "carwash"),
@@ -616,7 +617,7 @@ class Carwash
      * @param array $columns
      * @return array
      */
-    function appointment_custom_column($columns)
+    public function appointment_custom_column($columns)
     {
         unset($columns['title']);
         unset($columns['author']);
@@ -642,7 +643,7 @@ class Carwash
      * @param int $post_id
      * @return void
      */
-    function appointment_column_populate($column, $post_id)
+    public function appointment_column_populate($column, $post_id)
     {
         switch ($column) {
             case 'package_name':
@@ -688,7 +689,7 @@ class Carwash
      *
      * @return void
      */
-    function add_appointment_metabox()
+    public function add_appointment_metabox()
     {
         add_meta_box(
             'carwash_post_appointment',
@@ -704,7 +705,7 @@ class Carwash
      * @param object $post
      * @return void
      */
-    function carwash_display_post_appointment($post)
+    public function carwash_display_post_appointment($post)
     {
         $data['apt_no'] = get_post_field('post_title', $post->ID);
         $data['label_apt_no'] = __('Apt. No', 'carwash');
@@ -747,7 +748,7 @@ class Carwash
      * @param int $post_id
      * @return void
      */
-    function save_appointment_metadata($post_id)
+    public function save_appointment_metadata($post_id)
     {
 
         if (!$this->is_secured('carwash_appointment_token', 'carwash_appointment', $post_id)) {
@@ -770,7 +771,7 @@ class Carwash
      * @param array $attributes
      * @return void
      */
-    function front_appointment($attributes)
+    public function front_appointment($attributes)
     {
         $args = array('posts_per_page' => -1, 'post_type' => 'package');
         $data['packages'] = get_posts($args);
@@ -802,7 +803,12 @@ class Carwash
         return ob_get_clean();
     }
 
-    function carwash_add_appointment()
+    /**
+     * Function to add Appointment from Frontend
+     *
+     * @return json
+     */
+    public function carwash_add_appointment()
     {
         $package_id = CarwashHelper::Input('package_id');
         $customer_name = CarwashHelper::Input('customer_name');
@@ -820,12 +826,12 @@ class Carwash
             );
             echo json_encode($response);
         } else {
-            // create post object with the form values
+            // Create post object with the form values
             $args = array(
-                'post_title'    => 'Appointment#' . strtoupper(uniqid()),
+                'post_title'    => '#' . strtoupper(uniqid()),
                 'post_status'   => 'publish',
                 'post_type'     => 'appointment'
-                );
+            );
             $appointment_id = wp_insert_post($args);
 
             update_post_meta($appointment_id, 'carwash_package_id', $package_id);
@@ -837,16 +843,55 @@ class Carwash
             update_post_meta($appointment_id, 'carwash_time', $time);
             update_post_meta($appointment_id, 'carwash_status', $status);
 
+            $args = array(
+                'to'        => $email,
+                'name'      => $customer_name,
+                'apt_id'    => $appointment_id,
+                'apt_date'  => $apt_date,
+                'apt_time'  => $apt_time,
+            );
+
+            // Action for sending email to the customer about the new Appointment
+            $is_email_send = do_action('send_customer_email', $args);
+
+            $message = __('Successfully submitted!<br>Email sent to '.$email, 'carwash');
+
+            if (!$is_email_send) {
+                __('Successfully submitted!<br><span class="text-danger">Failed to send Email to </span>'.$email, 'carwash');
+            }
+            
             $response = array(
                 'success'   => true,
-                'message'   => __('Successfully submitted!', 'carwash')
+                'message'   => $message,
+                'data'      => null
             );
+
             echo json_encode($response);
         }
 
         exit;
     }
 
+    /**
+     * Function to send email
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function send_customer_email($data)
+    {
+        $to = $data['to'];
+        $subject = __('New Appointment', 'carwash');
+        $message = "Dear ".$data['name'].",\n";
+        $message .= "Thank you for your Appointment. Your Appointment details are,\n";
+        $message .= "Appointment ID: ".$data['apt_id']."\n";
+        $message .= "Appointment Date: ".date('d/m/Y', strtotime($data['apt_date']))."\n";
+        $message .= "Appointment Time: ".date('h:i A', strtotime($data['apt_time']))."\n";
+
+        $email_status = wp_mail($to, $subject, $message);
+
+        return $email_status;
+    }
 }
 
 new Carwash();

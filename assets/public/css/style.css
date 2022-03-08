@@ -10,3 +10,7 @@
 #appointmentModal .modal-body select {
     padding: 4px;
 }
+
+.hidden {
+    display: none !important;
+}

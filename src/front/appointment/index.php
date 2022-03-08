@@ -63,24 +63,28 @@
                 <h5 class="modal-title text-dark" id="appointmentModalLabel">Modal title</h5>
             </div>
             <form method="POST">
-                <div class="modal-body text-secondary">
-                    <div class="row mb-3">
-                        <p class="mb-1"><b class="text-dark"><?= __('Selected Package', 'carwash') ?></b>: <span class="text-secondary pack-name"></span></p>
-                        <p class="mb-1"><b class="text-dark"><?= __('Total Price', 'carwash') ?></b>: $<span class="text-secondary pack-price">00.00</span></p>
-                        <p class="mb-1"><b class="text-dark"><?= __('Required Time', 'carwash') ?></b>: <span class="text-secondary pack-time">00</span> mins</p>
+                <div class="modal-body text-dark">
+                    <div class="main">
+                        <div class="row mb-3">
+                            <p class="mb-1"><b class="text-dark"><?= __('Selected Package', 'carwash') ?></b>: <span class="text-dark pack-name"></span></p>
+                            <p class="mb-1"><b class="text-dark"><?= __('Total Price', 'carwash') ?></b>: $<span class="text-dark pack-price">00.00</span></p>
+                            <p class="mb-1"><b class="text-dark"><?= __('Required Time', 'carwash') ?></b>: <span class="text-dark pack-time">00</span> mins</p>
+                        </div>
+                        <?php wp_nonce_field('carwash_front_appointment', 'carwash_appointment_token'); ?>
+                        <input type="hidden" class="pack-id" name="package_id" value="0">
+                        <label class="form-label text-dark"><?= __('Customer Name', 'carwash') ?></label>
+                        <input type="text" class="form-control form-control-sm bg-light text-dark mb-2 customer_name" name="customer_name" required="">
+                        <label class="form-label text-dark"><?= __('Email', 'carwash') ?></label>
+                        <input type="email" class="form-control form-control-sm bg-light text-dark mb-2 email" name="email" required="">
+                        <label class="form-label text-dark"><?= __('Appointment Date', 'carwash') ?></label>
+                        <input type="date" class="form-control form-control-sm bg-light text-dark mb-2 apt_date" name="apt_date" min="<?= date('Y-m-d'); ?>" required="">
+                        <label class="form-label text-dark"><?= __('Appointment Time', 'carwash') ?></label>
+                        <input type="time" class="form-control form-control-sm bg-light text-dark mb-2 apt_time" name="apt_time" required="">
+                        <input type="hidden" class="r_price" name="price" value="">
+                        <input type="hidden" class="r_time" name="time" value="">
                     </div>
-                    <?php wp_nonce_field('carwash_front_appointment', 'carwash_appointment_token'); ?>
-                    <input type="hidden" class="pack-id" name="package_id" value="0">
-                    <label class="form-label text-secondary"><?= __('Customer Name', 'carwash') ?></label>
-                    <input type="text" class="form-control form-control-sm bg-light text-secondary mb-2 customer_name" name="customer_name" required="">
-                    <label class="form-label text-secondary"><?= __('Email', 'carwash') ?></label>
-                    <input type="email" class="form-control form-control-sm bg-light text-secondary mb-2 email" name="email" required="">
-                    <label class="form-label text-secondary"><?= __('Appointment Date', 'carwash') ?></label>
-                    <input type="date" class="form-control form-control-sm bg-light text-secondary mb-2 apt_date" name="apt_date" min="<?= date('Y-m-d'); ?>" required="">
-                    <label class="form-label text-secondary"><?= __('Appointment Time', 'carwash') ?></label>
-                    <input type="time" class="form-control form-control-sm bg-light text-secondary mb-2 apt_time" name="apt_time" required="">
-                    <input type="hidden" class="r_price" name="price" value="">
-                    <input type="hidden" class="r_time" name="time" value="">
+                    <div class="response hidden">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger btn-sm bg-danger text-light btn-exit" data-bs-dismiss="modal"><?= __('Cancel', 'carwash') ?></button>
