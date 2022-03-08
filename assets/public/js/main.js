@@ -47,33 +47,22 @@
 					submit_btn.text('Processing...');
 				},			
 				success: function (response) {
-					console.log(response);
 					var obj = JSON.parse(response);
+					modal_main.addClass('hidden');
+					modal_response.removeClass('hidden');
 					if (obj.success) {
-						modal_main.addClass('hidden');
-						modal_response.removeClass('hidden');
 						modal_response.html('<h6 class="text-success text-center py-5">'+obj.message+'</h6>');
-						setTimeout(function() {
-							close_btn.removeAttr('disabled');
-							submit_btn.removeAttr('disabled');
-							submit_btn.text('Submit');
-							close_btn.click();
-							modal_main.removeClass('hidden');
-							modal_response.addClass('hidden');
-						}, 5000);
 					} else {
-						modal_main.addClass('hidden');
-						modal_response.removeClass('hidden');
 						modal_response.html('<h6 class="text-danger text-center py-5">'+obj.message+'</h6>');
-						setTimeout(function() {
-							close_btn.removeAttr('disabled');
-							submit_btn.removeAttr('disabled');
-							submit_btn.text('Submit');
-							close_btn.click();
-							modal_main.removeClass('hidden');
-							modal_response.addClass('hidden');
-						}, 5000);
 					}
+					setTimeout(function() {
+						close_btn.removeAttr('disabled');
+						submit_btn.removeAttr('disabled');
+						submit_btn.text('Submit');
+						close_btn.click();
+						modal_main.removeClass('hidden');
+						modal_response.addClass('hidden');
+					}, 5000);
 				}
 			});
 		});
