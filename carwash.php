@@ -881,7 +881,7 @@ class Carwash
     public function send_customer_email($data)
     {
         $to = $data['to'];
-        $subject = __('New Appointment', 'carwash');
+        $subject = 'New Appointment '.$data['apt_id'];
         $message = "Dear ".$data['name'].",\n";
         $message .= "Thank you for your Appointment. Your Appointment details are,\n";
         $message .= "Appointment ID: ".$data['apt_id']."\n";
