@@ -46,26 +46,26 @@ class Carwash
         add_action('admin_init', array($this, 'check_login_role'));
 
         // Custom post Car
-        add_action('admin_init', array($this, 'register_car'));
+        add_action('init', array($this, 'register_car'));
         add_filter('manage_car_posts_columns', array($this, 'car_custom_column'));
         add_action('manage_car_posts_custom_column' , array($this, 'car_column_populate'), 10, 2);
 
         // Custom post Service
-        add_action('admin_init', array($this, 'register_service'));
+        add_action('init', array($this, 'register_service'));
         add_action('add_meta_boxes', array($this, 'add_service_metabox'));
         add_action('save_post', array($this, 'save_service_metadata'));
         add_filter('manage_service_posts_columns', array($this, 'service_custom_column'));
         add_action('manage_service_posts_custom_column' , array($this, 'service_column_populate'), 10, 2);
 
         // Custom post Package
-        add_action('admin_init', array($this, 'register_package'));
+        add_action('init', array($this, 'register_package'));
         add_action('add_meta_boxes', array($this, 'add_package_metabox'));
         add_action('save_post', array($this, 'save_package_metadata'));
         add_filter('manage_package_posts_columns', array($this, 'package_custom_column'));
         add_action('manage_package_posts_custom_column' , array($this, 'package_column_populate'), 10, 2);
 
         // Custom post Appointment
-        add_action('admin_init', array($this, 'register_appointment'));
+        add_action('init', array($this, 'register_appointment'));
         add_action('add_meta_boxes', array($this, 'add_appointment_metabox'));
         add_action('save_post', array($this, 'save_appointment_metadata'));
         add_filter('manage_appointment_posts_columns', array($this, 'appointment_custom_column'));
