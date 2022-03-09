@@ -1,5 +1,5 @@
-; (function ($) {
-	$(document).ready(function () {
+;(function($) {
+	$(document).ready(function() {
 		checkIfLoggedInOrRegister();
 		var max_height = 0;
 		$(".carwash-appointment .card-body").each(function() {
@@ -47,7 +47,7 @@
 					submit_btn.attr('disabled', 'disabled');
 					submit_btn.text(carwash_info.processing_text);
 				},			
-				success: function (response) {
+				success: function(response) {
 					var obj = JSON.parse(response);
 					if (obj.success) {
 						showAlert('success', obj.message);
@@ -79,7 +79,7 @@
 					submit_btn.attr('disabled', 'disabled');
 					submit_btn.text(carwash_info.processing_text);
 				},			
-				success: function (response) {
+				success: function(response) {
 					var obj = JSON.parse(response);
 					close_btn.click();
 					close_btn.removeAttr('disabled');
@@ -112,7 +112,7 @@
 					submit_btn.attr('disabled', 'disabled');
 					submit_btn.text(carwash_info.processing_text);
 				},			
-				success: function (response) {
+				success: function(response) {
 					var obj = JSON.parse(response);
 					close_btn.click();
 					close_btn.removeAttr('disabled');
@@ -130,7 +130,7 @@
 		
 	});
 
-	function showAlert (style, text) {
+	function showAlert(style, text) {
 		var alert = $(".carwash-"+style+"-alert");
 		var alert_text = $(".carwash-"+style+"-alert .alert-txt");
 		alert_text.text(text);
@@ -141,7 +141,7 @@
 		}, 5000);
 	}
 
-	function checkIfLoggedInOrRegister () {
+	function checkIfLoggedInOrRegister() {
 		if (localStorage.getItem("logged_in")) {
 			showAlert('success', carwash_info.login_success_text);
 			localStorage.removeItem("logged_in");
