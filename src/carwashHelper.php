@@ -46,12 +46,19 @@ class CarwashHelper
      * @param array $data
      * @return void
      */
-    public static function View($path, $data)
+    public static function View($path, $data, $top = true, $bottom = true)
     {
         foreach ($data as $key => $value) {
             $$key = $value;
         }
+        
+        if ($top && strpos($path, 'front') !== false) {
+            require_once('front/layout/top.php');
+        }
         require_once($path);
+        if ($bottom && strpos($path, 'front') !== false) {
+            require_once('front/layout/bottom.php');
+        }
     }
 
     /**

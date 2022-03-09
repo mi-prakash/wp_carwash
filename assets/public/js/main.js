@@ -1,5 +1,6 @@
 ; (function ($) {
 	$(document).ready(function () {
+		checkIfLoggedInOrRegister();
 		var max_height = 0;
 		$(".carwash-appointment .card-body").each(function() {
 			var height = $(this).height();
@@ -44,25 +45,19 @@
 				beforeSend: function() {
 					close_btn.attr('disabled', 'disabled');
 					submit_btn.attr('disabled', 'disabled');
-					submit_btn.text('Processing...');
+					submit_btn.text(carwash_info.processing_text);
 				},			
 				success: function (response) {
 					var obj = JSON.parse(response);
-					modal_main.addClass('hidden');
-					modal_response.removeClass('hidden');
 					if (obj.success) {
-						modal_response.html('<h6 class="text-success text-center py-5">'+obj.message+'</h6>');
+						showAlert('success', obj.message);
 					} else {
-						modal_response.html('<h6 class="text-danger text-center py-5">'+obj.message+'</h6>');
+						showAlert('danger', obj.message);
 					}
-					setTimeout(function() {
-						close_btn.removeAttr('disabled');
-						submit_btn.removeAttr('disabled');
-						submit_btn.text('Submit');
-						close_btn.click();
-						modal_main.removeClass('hidden');
-						modal_response.addClass('hidden');
-					}, 5000);
+					close_btn.click();
+					close_btn.removeAttr('disabled');
+					submit_btn.removeAttr('disabled');
+					submit_btn.text(carwash_info.submit_text);
 				}
 			});
 		});
@@ -82,28 +77,20 @@
 				beforeSend: function() {
 					close_btn.attr('disabled', 'disabled');
 					submit_btn.attr('disabled', 'disabled');
-					submit_btn.text('Processing...');
+					submit_btn.text(carwash_info.processing_text);
 				},			
 				success: function (response) {
 					var obj = JSON.parse(response);
-					modal_main.addClass('hidden');
-					modal_response.removeClass('hidden');
+					close_btn.click();
+					close_btn.removeAttr('disabled');
+					submit_btn.removeAttr('disabled');
+					submit_btn.text(carwash_info.submit_text);
 					if (obj.success) {
-						modal_response.html('<h6 class="text-success text-center py-5">'+obj.message+'</h6>');
+						localStorage.setItem("logged_in", true);
+						location.reload();
 					} else {
-						modal_response.html('<h6 class="text-danger text-center py-5">'+obj.message+'</h6>');
+						showAlert('danger', obj.message);
 					}
-					setTimeout(function() {
-						close_btn.removeAttr('disabled');
-						submit_btn.removeAttr('disabled');
-						submit_btn.text('Submit');
-						close_btn.click();
-						modal_main.removeClass('hidden');
-						modal_response.addClass('hidden');
-						if (obj.success) {
-							location.reload();
-						}
-					}, 3500);
 				}
 			});
 		});
@@ -123,30 +110,46 @@
 				beforeSend: function() {
 					close_btn.attr('disabled', 'disabled');
 					submit_btn.attr('disabled', 'disabled');
-					submit_btn.text('Processing...');
+					submit_btn.text(carwash_info.processing_text);
 				},			
 				success: function (response) {
 					var obj = JSON.parse(response);
-					modal_main.addClass('hidden');
-					modal_response.removeClass('hidden');
+					close_btn.click();
+					close_btn.removeAttr('disabled');
+					submit_btn.removeAttr('disabled');
+					submit_btn.text(carwash_info.submit_text);
 					if (obj.success) {
-						modal_response.html('<h6 class="text-success text-center py-5">'+obj.message+'</h6>');
+						localStorage.setItem("registered", true);
+						location.reload();
 					} else {
-						modal_response.html('<h6 class="text-danger text-center py-5">'+obj.message+'</h6>');
+						showAlert('danger', obj.message);
 					}
-					setTimeout(function() {
-						close_btn.removeAttr('disabled');
-						submit_btn.removeAttr('disabled');
-						submit_btn.text('Submit');
-						close_btn.click();
-						modal_main.removeClass('hidden');
-						modal_response.addClass('hidden');
-						if (obj.success) {
-							location.reload();
-						}
-					}, 3500);
 				}
 			});
 		});
+		
 	});
+
+	function showAlert (style, text) {
+		var alert = $(".carwash-"+style+"-alert");
+		var alert_text = $(".carwash-"+style+"-alert .alert-txt");
+		alert_text.text(text);
+		alert.removeClass('hidden');
+		setTimeout(function() {
+			alert.addClass('hidden');
+			alert_text.text('');
+		}, 5000);
+	}
+
+	function checkIfLoggedInOrRegister () {
+		if (localStorage.getItem("logged_in")) {
+			showAlert('success', carwash_info.login_success_text);
+			localStorage.removeItem("logged_in");
+		}
+
+		if (localStorage.getItem("registered")) {
+			showAlert('success', carwash_info.register_success_text);
+			localStorage.removeItem("registered");
+		}
+	}
 })(jQuery);

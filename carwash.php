@@ -151,8 +151,12 @@ class Carwash
 
         // Pass data to js file
         $data = array(
-            'ajax_url'      => admin_url('admin-ajax.php'),
-            'confirm_text'  => __('Are you sure?', 'carwash')
+            'ajax_url'              => admin_url('admin-ajax.php'),
+            'confirm_text'          => __('Are you sure?', 'carwash'),
+            'processing_text'       => __('Processing...', 'carwash'),
+            'submit_text'           => __('Submit', 'carwash'),
+            'login_success_text'    => __('Successfully Logged In', 'carwash'),
+            'register_success_text' => __('Successfully Registered', 'carwash'),
         );
         wp_localize_script('carwash-front-main-js', 'carwash_info', $data);
     }
@@ -889,10 +893,10 @@ class Carwash
             // Action for sending email to the customer about the new Appointment
             $is_email_send = do_action('send_customer_email', $args);
 
-            $message = __('Successfully submitted!<br>Email sent to '.$email, 'carwash');
+            $message = __('Successfully submitted! Email sent to '.$email, 'carwash');
 
             if (!$is_email_send) {
-                __('Successfully submitted!<br><span class="text-danger">Failed to send Email to </span>'.$email, 'carwash');
+                __('Successfully submitted! <span class="text-danger">Failed to send Email to </span>'.$email, 'carwash');
             }
             
             $response = array(
