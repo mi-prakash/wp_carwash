@@ -1,4 +1,5 @@
 <div class="carwash-appointment">
+    <p class="text-center"><?= $page_info ?></p>
     <div class="row mb-3">
         <?php
         $i = 0;

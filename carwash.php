@@ -42,27 +42,30 @@ class Carwash
         // Load assets on Admin
         add_action('admin_enqueue_scripts', array($this, 'load_admin_assets'));
 
+        // Check Log In role
+        add_action('admin_init', array($this, 'check_login_role'));
+
         // Custom post Car
-        add_action('init', array($this, 'register_car'));
+        add_action('admin_init', array($this, 'register_car'));
         add_filter('manage_car_posts_columns', array($this, 'car_custom_column'));
         add_action('manage_car_posts_custom_column' , array($this, 'car_column_populate'), 10, 2);
 
         // Custom post Service
-        add_action('init', array($this, 'register_service'));
+        add_action('admin_init', array($this, 'register_service'));
         add_action('add_meta_boxes', array($this, 'add_service_metabox'));
         add_action('save_post', array($this, 'save_service_metadata'));
         add_filter('manage_service_posts_columns', array($this, 'service_custom_column'));
         add_action('manage_service_posts_custom_column' , array($this, 'service_column_populate'), 10, 2);
 
         // Custom post Package
-        add_action('init', array($this, 'register_package'));
+        add_action('admin_init', array($this, 'register_package'));
         add_action('add_meta_boxes', array($this, 'add_package_metabox'));
         add_action('save_post', array($this, 'save_package_metadata'));
         add_filter('manage_package_posts_columns', array($this, 'package_custom_column'));
         add_action('manage_package_posts_custom_column' , array($this, 'package_column_populate'), 10, 2);
 
         // Custom post Appointment
-        add_action('init', array($this, 'register_appointment'));
+        add_action('admin_init', array($this, 'register_appointment'));
         add_action('add_meta_boxes', array($this, 'add_appointment_metabox'));
         add_action('save_post', array($this, 'save_appointment_metadata'));
         add_filter('manage_appointment_posts_columns', array($this, 'appointment_custom_column'));
@@ -78,6 +81,12 @@ class Carwash
         add_action('wp_ajax_carwash_add_appointment', array($this, 'carwash_add_appointment'));
         add_action('wp_ajax_nopriv_carwash_add_appointment', array($this, 'carwash_add_appointment'));
         add_action('send_customer_email', array($this, 'send_customer_email'));
+
+        // Ajax action for Frontend Login
+        add_action('wp_ajax_nopriv_carwash_front_login', array($this, 'carwash_front_login'));
+
+        // Ajax action for Frontend Registration
+        add_action('wp_ajax_nopriv_carwash_front_registration', array($this, 'carwash_front_registration'));
     }
 
     /**
@@ -105,6 +114,23 @@ class Carwash
             // Pass data to js file
             $data = array('confirm_text' => __('Are you sure?', 'carwash'));
             wp_localize_script('carwash-main-js', 'carwash_info', $data);
+        }
+    }
+
+    /**
+     * Function to check User role and redirect
+     *
+     * @return void
+     */
+    public function check_login_role()
+    {
+        if (is_user_logged_in()) {
+            $user = wp_get_current_user();
+            $current_roles = $user->roles;
+            if (in_array('customer', $current_roles)) {
+                wp_safe_redirect(site_url());
+                exit;
+            }
         }
     }
 
@@ -139,7 +165,7 @@ class Carwash
      * @param int $post_id
      * @return boolean
      */
-    private function is_secured($nonce_field, $action, $post_id)
+    private function is_secured($nonce_field, $action, $post_id=null)
     {
         $nonce = CarwashHelper::Input($nonce_field);
 
@@ -149,15 +175,18 @@ class Carwash
         if (!wp_verify_nonce($nonce, $action)) {
             return false;
         }
-        if (!current_user_can('edit_post', $post_id)) {
-            return false;
+        if (!empty($post_id)) {
+            if (!current_user_can('edit_post', $post_id)) {
+                return false;
+            }
+            if (wp_is_post_autosave($post_id)) {
+                return false;
+            }
+            if (wp_is_post_revision($post_id)) {
+                return false;
+            }
         }
-        if (wp_is_post_autosave($post_id)) {
-            return false;
-        }
-        if (wp_is_post_revision($post_id)) {
-            return false;
-        }
+        
         return true;
     }
 
@@ -799,7 +828,13 @@ class Carwash
         }
         
         ob_start();
-        CarwashHelper::View('front/appointment/index.php', $data);
+        if (is_user_logged_in()) {
+            $data['page_info'] = __('Make Appointment from the following Packages', 'carwash');
+            CarwashHelper::View('front/appointment/index.php', $data);
+        } else {
+            $data['page_info'] = __('Please Log In to make an Appointment', 'carwash');
+            CarwashHelper::View('front/auth/index.php', $data);
+        }
         return ob_get_clean();
     }
 
@@ -811,14 +846,6 @@ class Carwash
     public function carwash_add_appointment()
     {
         $package_id = CarwashHelper::Input('package_id');
-        $customer_name = CarwashHelper::Input('customer_name');
-        $email = CarwashHelper::Input('email');
-        $apt_date = CarwashHelper::Input('apt_date');
-        $apt_time = CarwashHelper::Input('apt_time');
-        $price = CarwashHelper::Input('price');
-        $time = CarwashHelper::Input('time');
-        $status = 'pending';
-        
         if (!$this->is_secured('carwash_appointment_token', 'carwash_front_appointment', $package_id)) {
             $response = array(
                 'success'   => false,
@@ -826,6 +853,14 @@ class Carwash
             );
             echo json_encode($response);
         } else {
+            $customer_name = CarwashHelper::Input('customer_name');
+            $email = CarwashHelper::Input('email');
+            $apt_date = CarwashHelper::Input('apt_date');
+            $apt_time = CarwashHelper::Input('apt_time');
+            $price = CarwashHelper::Input('price');
+            $time = CarwashHelper::Input('time');
+            $status = 'pending';
+
             // Create post object with the form values
             $args = array(
                 'post_title'    => '#' . strtoupper(uniqid()),
@@ -892,6 +927,112 @@ class Carwash
 
         return $email_status;
     }
+
+    /**
+     * Log In function for Frontend
+     *
+     * @return json
+     */
+    public function carwash_front_login()
+    {
+        if (!$this->is_secured('carwash_login_token', 'carwash_front_login')) {
+            $response = array(
+                'success'   => false,
+                'message'   => __('Token verification failed!', 'carwash')
+            );
+            echo json_encode($response);
+        } else {
+            $username = CarwashHelper::Input('username');
+            $password = CarwashHelper::Input('password');
+
+            $user = wp_signon(array(
+                'user_login'    => $username,
+                'user_password' => $password,
+                'remember'      => false,
+            ));
+            if (is_wp_error($user)) {
+                $response = array(
+                    'success'   => false,
+                    'message'   => __('Log In failed!', 'carwash')
+                );
+            } else {
+                wp_set_current_user($user->ID);
+
+                $response = array(
+                    'success'   => true,
+                    'message'   => __('Successfully Logged In', 'carwash'),
+                    'data'      => $user->ID
+                );
+            }
+
+            echo json_encode($response);
+        }
+        exit;
+    }
+
+    /**
+     * Registration function for Frontend
+     *
+     * @return json
+     */
+    public function carwash_front_registration()
+    {
+        if (!$this->is_secured('carwash_register_token', 'carwash_front_register')) {
+            $response = array(
+                'success'   => false,
+                'message'   => __('Token verification failed!', 'carwash')
+            );
+            echo json_encode($response);
+        } else {
+            $email = CarwashHelper::Input('email');
+            $username = CarwashHelper::Input('username');
+            $password = CarwashHelper::Input('password');
+
+            $user_id = wp_create_user($username, $password, $email);
+            if (!$user_id) {
+                $response = array(
+                    'success'   => false,
+                    'message'   => __('Registration failed!', 'carwash')
+                );
+            } else {
+                $user = new WP_User($user_id);
+                $current_roles = $user->roles;
+                foreach ($current_roles as $role) {
+                    $user->remove_role($role);
+                }
+                $user->add_role('customer');
+
+                wp_set_current_user($user_id);
+                wp_set_auth_cookie($user_id);
+
+                $response = array(
+                    'success'   => true,
+                    'message'   => __('Successfully Registered', 'carwash'),
+                    'data'      => $user_id
+                );
+            }
+
+            echo json_encode($response);
+        }
+
+        exit;
+    }
 }
 
 new Carwash();
+
+/**
+ * Function to add Custom Role in Plugin activation
+ *
+ * @return void
+ */
+function carwash_plugin_activate()
+{
+    // Create custom Role
+    $caps = array(
+        'read' => true
+    );
+    add_role('customer', __('Customer', 'carwash'), $caps);
+}
+
+register_activation_hook( __FILE__, 'carwash_plugin_activate' );
