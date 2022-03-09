@@ -39,6 +39,9 @@ class Carwash
         // Initialize with loading textdomain
         add_action('plugins_loaded', array($this, 'load_textdomain'));
 
+        // Create Admin menu items
+        add_action('admin_menu', array($this, 'create_admin_submenu'));
+
         // Load assets on Admin
         add_action('admin_enqueue_scripts', array($this, 'load_admin_assets'));
 
@@ -97,6 +100,22 @@ class Carwash
     public function load_textdomain()
     {
         load_plugin_textdomain('carwash', false, dirname(__FILE__) . "/languages");
+    }
+
+    /**
+     * Function to create Admin Sub-Menu
+     *
+     * @return void
+     */
+    public function create_admin_submenu()
+    {
+        add_menu_page(__('Carwash', 'carwash'), __('Carwash', 'carwash'), 'manage_options', 'carwash-menu', '', 'dashicons-car', 25);
+        add_submenu_page('carwash-menu', __('Cars', 'carwash'), __('Cars', 'carwash'), 'manage_options', 'edit.php?post_type=car', '', 1);
+        add_submenu_page('carwash-menu', __('Services', 'carwash'), __('Services', 'carwash'), 'manage_options', 'edit.php?post_type=service', '', 2);
+        add_submenu_page('carwash-menu', __('Packages', 'carwash'), __('Packages', 'carwash'), 'manage_options', 'edit.php?post_type=package', '', 3);
+        add_submenu_page('carwash-menu', __('Appointments', 'carwash'), __('Appointments', 'carwash'), 'manage_options', 'edit.php?post_type=appointment', '', 4);
+
+        remove_submenu_page('carwash-menu', 'carwash-menu');
     }
 
     /**
@@ -229,7 +248,7 @@ class Carwash
             "rest_base"             => "",
             "rest_controller_class" => "WP_REST_Posts_Controller",
             "has_archive"           => true,
-            "show_in_menu"          => true,
+            "show_in_menu"          => false,
             "show_in_nav_menus"     => true,
             "delete_with_user"      => false,
             "exclude_from_search"   => false,
@@ -317,7 +336,7 @@ class Carwash
             "rest_base"             => "",
             "rest_controller_class" => "WP_REST_Posts_Controller",
             "has_archive"           => true,
-            "show_in_menu"          => true,
+            "show_in_menu"          => false,
             "show_in_nav_menus"     => true,
             "delete_with_user"      => false,
             "exclude_from_search"   => false,
@@ -482,7 +501,7 @@ class Carwash
             "rest_base"             => "",
             "rest_controller_class" => "WP_REST_Posts_Controller",
             "has_archive"           => true,
-            "show_in_menu"          => true,
+            "show_in_menu"          => false,
             "show_in_nav_menus"     => true,
             "delete_with_user"      => false,
             "exclude_from_search"   => false,
@@ -626,7 +645,7 @@ class Carwash
             "rest_base"             => "",
             "rest_controller_class" => "WP_REST_Posts_Controller",
             "has_archive"           => true,
-            "show_in_menu"          => true,
+            "show_in_menu"          => false,
             "show_in_nav_menus"     => true,
             "delete_with_user"      => false,
             "exclude_from_search"   => false,
