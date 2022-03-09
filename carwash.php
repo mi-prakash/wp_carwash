@@ -54,28 +54,28 @@ class Carwash
         // Custom post Car
         add_action('init', array($this, 'register_car'));
         add_filter('manage_car_posts_columns', array($this, 'car_custom_column'));
-        add_action('manage_car_posts_custom_column' , array($this, 'car_column_populate'), 10, 2);
+        add_action('manage_car_posts_custom_column', array($this, 'car_column_populate'), 10, 2);
 
         // Custom post Service
         add_action('init', array($this, 'register_service'));
         add_action('add_meta_boxes', array($this, 'add_service_metabox'));
         add_action('save_post', array($this, 'save_service_metadata'));
         add_filter('manage_service_posts_columns', array($this, 'service_custom_column'));
-        add_action('manage_service_posts_custom_column' , array($this, 'service_column_populate'), 10, 2);
+        add_action('manage_service_posts_custom_column', array($this, 'service_column_populate'), 10, 2);
 
         // Custom post Package
         add_action('init', array($this, 'register_package'));
         add_action('add_meta_boxes', array($this, 'add_package_metabox'));
         add_action('save_post', array($this, 'save_package_metadata'));
         add_filter('manage_package_posts_columns', array($this, 'package_custom_column'));
-        add_action('manage_package_posts_custom_column' , array($this, 'package_column_populate'), 10, 2);
+        add_action('manage_package_posts_custom_column', array($this, 'package_column_populate'), 10, 2);
 
         // Custom post Appointment
         add_action('init', array($this, 'register_appointment'));
         add_action('add_meta_boxes', array($this, 'add_appointment_metabox'));
         add_action('save_post', array($this, 'save_appointment_metadata'));
         add_filter('manage_appointment_posts_columns', array($this, 'appointment_custom_column'));
-        add_action('manage_appointment_posts_custom_column' , array($this, 'appointment_column_populate'), 10, 2);
+        add_action('manage_appointment_posts_custom_column', array($this, 'appointment_column_populate'), 10, 2);
 
         // Load assets on Frontend
         add_action('wp_enqueue_scripts', array($this, 'load_front_assets'));
@@ -190,7 +190,7 @@ class Carwash
         if (is_user_logged_in()) {
             $user = wp_get_current_user();
             $current_roles = $user->roles;
-            if (in_array('customer', $current_roles)) {
+            if (in_array('customer', $current_roles) && wp_doing_ajax() == false) {
                 wp_safe_redirect(site_url());
                 exit;
             }
@@ -232,7 +232,7 @@ class Carwash
      * @param int $post_id
      * @return boolean
      */
-    private function is_secured($nonce_field, $action, $post_id=null)
+    private function is_secured($nonce_field, $action, $post_id = null)
     {
         $nonce = CarwashHelper::Input($nonce_field);
 
@@ -253,7 +253,7 @@ class Carwash
                 return false;
             }
         }
-        
+
         return true;
     }
 
@@ -342,7 +342,7 @@ class Carwash
     {
         switch ($column) {
             case 'image':
-                echo "<img class='wp-image' src='".get_the_post_thumbnail_url($post_id)."' alt='".get_post_field('post_title', $post_id)."'>";
+                echo "<img class='wp-image' src='" . get_the_post_thumbnail_url($post_id) . "' alt='" . get_post_field('post_title', $post_id) . "'>";
                 break;
         }
     }
@@ -496,18 +496,18 @@ class Carwash
                 $car_id = get_post_meta($post_id, 'carwash_car_id', true);
                 echo get_post_field('post_title', $car_id);
                 break;
-        
+
             case 'price':
                 $price = get_post_meta($post_id, 'carwash_price', true);
                 if (is_numeric($price)) {
-                    echo '$'.number_format(get_post_meta($post_id, 'carwash_price', true), 2);
+                    echo '$' . number_format(get_post_meta($post_id, 'carwash_price', true), 2);
                 } else {
-                    echo '$'.number_format(0, 2);
+                    echo '$' . number_format(0, 2);
                 }
                 break;
 
             case 'time':
-                echo get_post_meta($post_id, 'carwash_time', true).' mins';
+                echo get_post_meta($post_id, 'carwash_time', true) . ' mins';
                 break;
         }
     }
@@ -761,11 +761,11 @@ class Carwash
                 break;
             case 'price':
                 $price = get_post_meta($post_id, 'carwash_price', true);
-                echo is_numeric($price) ? '$'.number_format($price, 2) : '$0.00';
+                echo is_numeric($price) ? '$' . number_format($price, 2) : '$0.00';
                 break;
             case 'time':
                 $time = get_post_meta($post_id, 'carwash_time', true);
-                echo is_numeric($time) ? $time.' mins' : '00 mins';
+                echo is_numeric($time) ? $time . ' mins' : '00 mins';
                 break;
             case 'status':
                 $status = get_post_meta($post_id, 'carwash_status', true);
@@ -777,7 +777,7 @@ class Carwash
                 } elseif ($status == 'completed') {
                     $class_name = 'text-success';
                 }
-                echo '<span class="'.$class_name.'">'.ucfirst($status).'</span>';
+                echo '<span class="' . $class_name . '">' . ucfirst($status) . '</span>';
                 break;
         }
     }
@@ -823,11 +823,11 @@ class Carwash
         $data['label_apt_datetime'] = __('Appointment Datetime', 'carwash');
 
         $price = get_post_meta($post->ID, 'carwash_price', true);
-        $data['price'] = is_numeric($price) ? '$'.number_format($price, 2) : '$0.00';
+        $data['price'] = is_numeric($price) ? '$' . number_format($price, 2) : '$0.00';
         $data['label_price'] = __('Total Price', 'carwash');
 
         $time = get_post_meta($post->ID, 'carwash_time', true);
-        $data['time'] = is_numeric($time) ? $time.' mins' : '00 mins';
+        $data['time'] = is_numeric($time) ? $time . ' mins' : '00 mins';
         $data['label_time'] = __('Total Time', 'carwash');
 
         $data['status'] = get_post_meta($post->ID, 'carwash_status', true);
@@ -895,7 +895,7 @@ class Carwash
             $data['packages'][$i]->services = $services;
             $i++;
         }
-        
+
         ob_start();
         if (is_user_logged_in()) {
             $data['page_info'] = __('Make Appointment from the following Packages', 'carwash');
@@ -914,14 +914,14 @@ class Carwash
      */
     public function carwash_add_appointment()
     {
-        $package_id = CarwashHelper::Input('package_id');
-        if (!$this->is_secured('carwash_appointment_token', 'carwash_front_appointment', $package_id)) {
+        if (!$this->is_secured('carwash_appointment_token', 'carwash_front_appointment')) {
             $response = array(
                 'success'   => false,
                 'message'   => __('Token verification failed!', 'carwash')
             );
             echo json_encode($response);
         } else {
+            $package_id = CarwashHelper::Input('package_id');
             $customer_name = CarwashHelper::Input('customer_name');
             $email = CarwashHelper::Input('email');
             $apt_date = CarwashHelper::Input('apt_date');
@@ -958,12 +958,12 @@ class Carwash
             // Action for sending email to the customer about the new Appointment
             $is_email_send = do_action('send_customer_email', $args);
 
-            $message = __('Successfully submitted! Email sent to '.$email, 'carwash');
+            $message = __('Successfully submitted! Email sent to ' . $email, 'carwash');
 
             if (!$is_email_send) {
-                __('Successfully submitted! <span class="text-danger">Failed to send Email to </span>'.$email, 'carwash');
+                __('Successfully submitted! <span class="text-danger">Failed to send Email to </span>' . $email, 'carwash');
             }
-            
+
             $response = array(
                 'success'   => true,
                 'message'   => $message,
@@ -985,12 +985,12 @@ class Carwash
     public function send_customer_email($data)
     {
         $to = $data['to'];
-        $subject = 'New Appointment '.$data['apt_id'];
-        $message = "Dear ".$data['name'].",\n";
+        $subject = 'New Appointment ' . $data['apt_id'];
+        $message = "Dear " . $data['name'] . ",\n";
         $message .= "Thank you for your Appointment. Your Appointment details are,\n";
-        $message .= "Appointment ID: ".$data['apt_id']."\n";
-        $message .= "Appointment Date: ".date('d/m/Y', strtotime($data['apt_date']))."\n";
-        $message .= "Appointment Time: ".date('h:i A', strtotime($data['apt_time']))."\n";
+        $message .= "Appointment ID: " . $data['apt_id'] . "\n";
+        $message .= "Appointment Date: " . date('d/m/Y', strtotime($data['apt_date'])) . "\n";
+        $message .= "Appointment Time: " . date('h:i A', strtotime($data['apt_time'])) . "\n";
 
         $email_status = wp_mail($to, $subject, $message);
 
@@ -1104,4 +1104,4 @@ function carwash_plugin_activate()
     add_role('customer', __('Customer', 'carwash'), $caps);
 }
 
-register_activation_hook( __FILE__, 'carwash_plugin_activate' );
+register_activation_hook(__FILE__, 'carwash_plugin_activate');

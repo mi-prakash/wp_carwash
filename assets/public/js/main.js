@@ -54,9 +54,9 @@
 					} else {
 						showAlert('danger', obj.message);
 					}
-					close_btn.click();
 					close_btn.removeAttr('disabled');
 					submit_btn.removeAttr('disabled');
+					close_btn.click();
 					submit_btn.text(carwash_info.submit_text);
 				}
 			});
@@ -81,9 +81,9 @@
 				},			
 				success: function(response) {
 					var obj = JSON.parse(response);
-					close_btn.click();
 					close_btn.removeAttr('disabled');
 					submit_btn.removeAttr('disabled');
+					close_btn.click();
 					submit_btn.text(carwash_info.submit_text);
 					if (obj.success) {
 						localStorage.setItem("logged_in", true);
@@ -114,9 +114,9 @@
 				},			
 				success: function(response) {
 					var obj = JSON.parse(response);
-					close_btn.click();
 					close_btn.removeAttr('disabled');
 					submit_btn.removeAttr('disabled');
+					close_btn.click();
 					submit_btn.text(carwash_info.submit_text);
 					if (obj.success) {
 						localStorage.setItem("registered", true);
