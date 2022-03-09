@@ -48,6 +48,9 @@ class Carwash
         // Load assets on Admin
         add_action('admin_enqueue_scripts', array($this, 'load_admin_assets'));
 
+        // Load Admin dashboard widget
+        add_action('wp_dashboard_setup', array($this, 'dashboard_widget'));
+
         // Check Log In role
         add_action('admin_init', array($this, 'check_login_role'));
 
@@ -169,15 +172,49 @@ class Carwash
      */
     public function load_admin_assets()
     {
-        $this_screen = get_current_screen();
-        if ($this_screen->post_type == 'car' || $this_screen->post_type == 'service' || $this_screen->post_type == 'package' || $this_screen->post_type == 'appointment') {
-            wp_enqueue_style('carwash-main-css', CARWASH_ASSETS_DIR . 'admin/css/style.css', null, $this->version);
-            wp_enqueue_script('carwash-main-js', CARWASH_ASSETS_DIR . 'admin/js/main.js', array('jquery'), $this->version, true);
+        wp_enqueue_style('carwash-main-css', CARWASH_ASSETS_DIR . 'admin/css/style.css', null, $this->version);
+        wp_enqueue_script('carwash-main-js', CARWASH_ASSETS_DIR . 'admin/js/main.js', array('jquery'), $this->version, true);
 
-            // Pass data to js file
-            $data = array('confirm_text' => __('Are you sure?', 'carwash'));
-            wp_localize_script('carwash-main-js', 'carwash_info', $data);
-        }
+        // Pass data to js file
+        $data = array('confirm_text' => __('Are you sure?', 'carwash'));
+        wp_localize_script('carwash-main-js', 'carwash_info', $data);
+    }
+
+    /**
+     * Function for dashboard Widget
+     *
+     * @return void
+     */
+    public function dashboard_widget()
+    {
+        wp_add_dashboard_widget('carwash_dashboard', __('Carwash Widget', 'carwash'), array($this, 'dashboard_widget_output'), null, null, 'normal', 'high');
+    }
+
+    /**
+     * Function to output the widget
+     *
+     * @return void
+     */
+    public function dashboard_widget_output()
+    {
+        /* $args = array(
+            'post_type' => 'car',
+            'post_status' => 'publish',
+            'numberposts' => -1
+        );
+        $cars = get_posts($args);
+
+        echo "<pre>";
+        print_r($cars);
+        echo "</pre>"; */
+
+        $data['total_cars'] = wp_count_posts('car')->publish;
+        $data['total_services'] = wp_count_posts('service')->publish;
+        $data['total_packages'] = wp_count_posts('package')->publish;
+        $data['total_appointments'] = wp_count_posts('appointment')->publish;
+
+        CarwashHelper::View('widget/carwash_widget.php', $data);
+        // exit;
     }
 
     /**
