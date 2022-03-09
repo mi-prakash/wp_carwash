@@ -42,6 +42,9 @@ class Carwash
         // Create Admin menu items
         add_action('admin_menu', array($this, 'create_admin_submenu'));
 
+        // Add Custom taxonomy Car Model
+        add_action('init', array($this, 'create_taxonomy_car_model'));
+
         // Load assets on Admin
         add_action('admin_enqueue_scripts', array($this, 'load_admin_assets'));
 
@@ -111,11 +114,52 @@ class Carwash
     {
         add_menu_page(__('Carwash', 'carwash'), __('Carwash', 'carwash'), 'manage_options', 'carwash-menu', '', 'dashicons-car', 25);
         add_submenu_page('carwash-menu', __('Cars', 'carwash'), __('Cars', 'carwash'), 'manage_options', 'edit.php?post_type=car', '', 1);
-        add_submenu_page('carwash-menu', __('Services', 'carwash'), __('Services', 'carwash'), 'manage_options', 'edit.php?post_type=service', '', 2);
-        add_submenu_page('carwash-menu', __('Packages', 'carwash'), __('Packages', 'carwash'), 'manage_options', 'edit.php?post_type=package', '', 3);
-        add_submenu_page('carwash-menu', __('Appointments', 'carwash'), __('Appointments', 'carwash'), 'manage_options', 'edit.php?post_type=appointment', '', 4);
+        add_submenu_page('carwash-menu', __('Car Models', 'carwash'), __('Car Models', 'carwash'), 'manage_options', 'edit-tags.php?taxonomy=car_model&post_type=car', '', 2);
+        add_submenu_page('carwash-menu', __('Services', 'carwash'), __('Services', 'carwash'), 'manage_options', 'edit.php?post_type=service', '', 3);
+        add_submenu_page('carwash-menu', __('Packages', 'carwash'), __('Packages', 'carwash'), 'manage_options', 'edit.php?post_type=package', '', 4);
+        add_submenu_page('carwash-menu', __('Appointments', 'carwash'), __('Appointments', 'carwash'), 'manage_options', 'edit.php?post_type=appointment', '', 5);
 
         remove_submenu_page('carwash-menu', 'carwash-menu');
+    }
+
+    /**
+     * Function to create custom taxonomy Car Model
+     *
+     * @return void
+     */
+    public function create_taxonomy_car_model()
+    {
+        // Add new taxonomy car_model, NOT hierarchical (like tags)
+        $labels = array(
+            'name'                       => _x('Car Models', 'taxonomy general name', 'carwash'),
+            'singular_name'              => _x('Car Model', 'taxonomy singular name', 'carwash'),
+            'search_items'               => __('Search Car Models', 'carwash'),
+            'popular_items'              => __('Popular Car Models', 'carwash'),
+            'all_items'                  => __('All Car Models', 'carwash'),
+            'parent_item'                => null,
+            'parent_item_colon'          => null,
+            'edit_item'                  => __('Edit Car Model', 'carwash'),
+            'update_item'                => __('Update Car Model', 'carwash'),
+            'add_new_item'               => __('Add New Car Model', 'carwash'),
+            'new_item_name'              => __('New Car Model Name', 'carwash'),
+            'separate_items_with_commas' => __('Separate Car Models with commas', 'carwash'),
+            'add_or_remove_items'        => __('Add or remove Car Models', 'carwash'),
+            'choose_from_most_used'      => __('Choose from the most used Car Models', 'carwash'),
+            'not_found'                  => __('No Car Models found.', 'carwash'),
+            'menu_name'                  => __('Car Models', 'carwash'),
+        );
+
+        $args = array(
+            'hierarchical'          => false,
+            'labels'                => $labels,
+            'show_ui'               => true,
+            'show_admin_column'     => true,
+            'update_count_callback' => '_update_post_term_count',
+            'query_var'             => true,
+            'rewrite'               => array('slug' => 'car-model'),
+        );
+
+        register_taxonomy('car_model', 'car', $args);
     }
 
     /**
@@ -273,12 +317,14 @@ class Carwash
      */
     public function car_custom_column($columns)
     {
+        unset($columns['taxonomy-car_model']);
         unset($columns['title']);
         unset($columns['author']);
         unset($columns['date']);
 
         $columns['image'] = __('Image', 'carwash');
         $columns['title'] = __('Title', 'carwash');
+        $columns['taxonomy-car_model'] = __('Model', 'carwash');
         $columns['author'] = __('Author', 'carwash');
         $columns['date'] = __('Date', 'carwash');
 
