@@ -55,7 +55,7 @@ class CarwashHelper
         if ($top && strpos($path, 'front') !== false) {
             require_once('front/layout/top.php');
         }
-        require_once($path);
+        require_once($path.'.php');
         if ($bottom && strpos($path, 'front') !== false) {
             require_once('front/layout/bottom.php');
         }

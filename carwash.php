@@ -197,23 +197,39 @@ class Carwash
      */
     public function dashboard_widget_output()
     {
-        /* $args = array(
-            'post_type' => 'car',
-            'post_status' => 'publish',
-            'numberposts' => -1
-        );
-        $cars = get_posts($args);
-
-        echo "<pre>";
-        print_r($cars);
-        echo "</pre>"; */
-
         $data['total_cars'] = wp_count_posts('car')->publish;
         $data['total_services'] = wp_count_posts('service')->publish;
         $data['total_packages'] = wp_count_posts('package')->publish;
         $data['total_appointments'] = wp_count_posts('appointment')->publish;
 
-        CarwashHelper::View('widget/carwash_widget.php', $data);
+        $args = array(
+            'post_type'     => 'appointment',
+            'post_status'   => 'publish',
+            'order'         => 'DESC',
+            'numberposts'   => 5,
+        );
+        $appointments = get_posts($args);
+
+        foreach ($appointments as $key => $appointment) {
+            $package_id = get_post_meta($appointment->ID, 'carwash_package_id', true);
+            $appointments[$key]->package_name = get_post_field('post_title', $package_id);
+
+            $appointments[$key]->customer_name = get_post_meta($appointment->ID, 'carwash_customer_name', true);
+
+            $appointments[$key]->email = get_post_meta($appointment->ID, 'carwash_email', true);
+
+            $apt_date = get_post_meta($appointment->ID, 'carwash_apt_date', true);
+            $apt_time = get_post_meta($appointment->ID, 'carwash_apt_time', true);
+            $appointments[$key]->apt_date_time = date('d/m/Y', strtotime($apt_date)) . '<br>' . date('h:i A', strtotime($apt_time));
+
+            $time = get_post_meta($appointment->ID, 'carwash_time', true);
+            $appointments[$key]->time = is_numeric($time) ? $time . ' mins' : '00 mins';
+
+        }
+
+        $data['appointments'] = $appointments;
+
+        CarwashHelper::View('widget/carwash_widget', $data);
         // exit;
     }
 
@@ -470,7 +486,7 @@ class Carwash
         $args = array('posts_per_page' => -1, 'post_type' => 'car');
         $data['cars'] = get_posts($args);
 
-        CarwashHelper::View('metabox/service.php', $data);
+        CarwashHelper::View('metabox/service', $data);
     }
 
     /**
@@ -631,7 +647,7 @@ class Carwash
         $args = array('posts_per_page' => -1, 'post_type' => 'service');
         $data['services'] = get_posts($args);
 
-        CarwashHelper::View('metabox/package.php', $data);
+        CarwashHelper::View('metabox/package', $data);
     }
 
     /**
@@ -874,7 +890,7 @@ class Carwash
 
         $data['status_fields'] = CarwashHelper::GetAppointmentStatusFields();
 
-        CarwashHelper::View('metabox/appointment.php', $data);
+        CarwashHelper::View('metabox/appointment', $data);
     }
 
     /**
@@ -936,10 +952,10 @@ class Carwash
         ob_start();
         if (is_user_logged_in()) {
             $data['page_info'] = __('Make Appointment from the following Packages', 'carwash');
-            CarwashHelper::View('front/appointment/index.php', $data);
+            CarwashHelper::View('front/appointment/index', $data);
         } else {
             $data['page_info'] = __('Please Log In to make an Appointment', 'carwash');
-            CarwashHelper::View('front/auth/index.php', $data);
+            CarwashHelper::View('front/auth/index', $data);
         }
         return ob_get_clean();
     }
