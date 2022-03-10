@@ -1,6 +1,6 @@
 <div class="carwash_dashboard">
     <div class="row">
-        <div class="col-3">
+        <div class="col-6">
             <div class="card text-center">
                 <a href="<?= admin_url().'edit.php?post_type=car' ?>">
                     <div class="card-body">
@@ -10,7 +10,7 @@
                 </a>
             </div>
         </div>
-        <div class="col-3">
+        <div class="col-6">
             <div class="card text-center">
                 <a href="<?= admin_url().'edit.php?post_type=service' ?>">
                     <div class="card-body">
@@ -20,7 +20,7 @@
                 </a>
             </div>
         </div>
-        <div class="col-3">
+        <div class="col-6">
             <div class="card text-center">
                 <a href="<?= admin_url().'edit.php?post_type=package' ?>">
                     <div class="card-body">
@@ -30,7 +30,7 @@
                 </a>
             </div>
         </div>
-        <div class="col-3">
+        <div class="col-6">
             <div class="card text-center">
                 <a href="<?= admin_url().'edit.php?post_type=appointment' ?>">
                     <div class="card-body">
