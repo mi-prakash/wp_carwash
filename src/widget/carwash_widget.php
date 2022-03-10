@@ -46,7 +46,7 @@
             <h4><?= __('Latest Appointments', 'carwash') ?></h4>
         </div>
         <div class="col-12">
-            <table class="table table-bordered table-striped">
+            <table class="table table-bordered table-striped table-responsive">
                 <thead class="table-dark">
                     <tr>
                         <th><?= __('Package', 'carwash') ?></th>

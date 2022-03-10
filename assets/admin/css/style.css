@@ -777,3 +777,7 @@ table {
 .carwash_dashboard table a:focus {
     box-shadow: none;
 }
+
+.carwash_dashboard table {
+    display: block;
+}
