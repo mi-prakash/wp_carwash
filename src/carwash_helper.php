@@ -1,6 +1,11 @@
 <?php
 namespace Carwash;
 
+/**
+ * Helper class for Carwash
+ * 
+ * @since 1.0.0
+ */
 class Carwash_Helper 
 {
 	/**

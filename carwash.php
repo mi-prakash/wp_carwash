@@ -953,8 +953,9 @@ class Carwash
 			$status = 'pending';
 
 			// Create post object with the form values
+			$appointment_name = '#' . strtoupper(uniqid());
 			$args = array(
-				'post_title'    => '#' . strtoupper(uniqid()),
+				'post_title'    => $appointment_name,
 				'post_status'   => 'publish',
 				'post_type'     => 'appointment'
 			);
@@ -972,7 +973,7 @@ class Carwash
 			$args = array(
 				'to'        => $email,
 				'name'      => $customer_name,
-				'apt_id'    => $appointment_id,
+				'apt_id'    => $appointment_name,
 				'apt_date'  => $apt_date,
 				'apt_time'  => $apt_time,
 			);
