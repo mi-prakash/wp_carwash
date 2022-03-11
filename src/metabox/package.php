@@ -1,4 +1,4 @@
-<div class="carwash_form package_meta">
+<div class="carwash-form package-meta">
     <?php
     if (!empty($saved_service_ids)) {
         $i = 1;

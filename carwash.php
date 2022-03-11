@@ -281,39 +281,6 @@ class Carwash
     }
 
     /**
-     * Function to check security after POST
-     *
-     * @param string $nonce_field
-     * @param string $action
-     * @param int $post_id
-     * @return boolean
-     */
-    private function is_secured($nonce_field, $action, $post_id = null)
-    {
-        $nonce = CarwashHelper::Input($nonce_field);
-
-        if ($nonce == '') {
-            return false;
-        }
-        if (!wp_verify_nonce($nonce, $action)) {
-            return false;
-        }
-        if (!empty($post_id)) {
-            if (!current_user_can('edit_post', $post_id)) {
-                return false;
-            }
-            if (wp_is_post_autosave($post_id)) {
-                return false;
-            }
-            if (wp_is_post_revision($post_id)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * Function to register Car as a custom Post type
      *
      * @return void
@@ -500,8 +467,7 @@ class Carwash
      */
     public function save_service_metadata($post_id)
     {
-
-        if (!$this->is_secured('carwash_service_token', 'carwash_service', $post_id)) {
+        if (!CarwashHelper::is_secured('carwash_service_token', 'carwash_service', $post_id)) {
             return $post_id;
         }
 
@@ -662,7 +628,7 @@ class Carwash
     public function save_package_metadata($post_id)
     {
 
-        if (!$this->is_secured('carwash_package_token', 'carwash_package', $post_id)) {
+        if (!CarwashHelper::is_secured('carwash_package_token', 'carwash_package', $post_id)) {
             return $post_id;
         }
         if (!is_array(CarwashHelper::Input('carwash_service_ids'))) {
@@ -905,7 +871,7 @@ class Carwash
     public function save_appointment_metadata($post_id)
     {
 
-        if (!$this->is_secured('carwash_appointment_token', 'carwash_appointment', $post_id)) {
+        if (!CarwashHelper::is_secured('carwash_appointment_token', 'carwash_appointment', $post_id)) {
             return $post_id;
         }
 
@@ -970,7 +936,7 @@ class Carwash
      */
     public function carwash_add_appointment()
     {
-        if (!$this->is_secured('carwash_appointment_token', 'carwash_front_appointment')) {
+        if (!CarwashHelper::is_secured('carwash_appointment_token', 'carwash_front_appointment')) {
             $response = array(
                 'success'   => false,
                 'message'   => __('Token verification failed!', 'carwash')
@@ -1060,7 +1026,7 @@ class Carwash
      */
     public function carwash_front_login()
     {
-        if (!$this->is_secured('carwash_login_token', 'carwash_front_login')) {
+        if (!CarwashHelper::is_secured('carwash_login_token', 'carwash_front_login')) {
             $response = array(
                 'success'   => false,
                 'message'   => __('Token verification failed!', 'carwash')
@@ -1102,7 +1068,7 @@ class Carwash
      */
     public function carwash_front_registration()
     {
-        if (!$this->is_secured('carwash_register_token', 'carwash_front_register')) {
+        if (!CarwashHelper::is_secured('carwash_register_token', 'carwash_front_register')) {
             $response = array(
                 'success'   => false,
                 'message'   => __('Token verification failed!', 'carwash')

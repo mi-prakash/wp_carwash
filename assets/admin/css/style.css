@@ -717,12 +717,12 @@ table {
     color: #198754;
 }
 
-.carwash_form {
+.carwash-form {
     display: block;
     width: 100%;
 }
 
-.carwash_form label {
+.carwash-form label {
     display: block;
     font-weight: bold;
     width: 100%;
@@ -735,19 +735,19 @@ table {
     min-width: auto;
 }
 
-.carwash_form input,
-.carwash_form select,
-.carwash_form textarea {
+.carwash-form input,
+.carwash-form select,
+.carwash-form textarea {
     display: block;
     width: 100%;
     margin-bottom: 20px;
 }
 
-.package_meta .btn-grp {
+.package-meta .btn-grp {
     text-align: right;
 }
 
-.package_meta .remove {
+.package-meta .remove {
     margin-top: -15px;
 }
 
@@ -755,28 +755,28 @@ table {
     width: 100px;
 }
 
-.carwash_dashboard .card-title {
+.carwash-dashboard .card-title {
     font-size: 20px;
     margin-top: 20px;
     margin-bottom: 0;
 }
 
-.carwash_dashboard .card-text {
+.carwash-dashboard .card-text {
     font-size: 12px;
     margin-top: 0;
     margin-bottom: 20px;
 }
 
-.carwash_dashboard .card a,
-.carwash_dashboard table a {
+.carwash-dashboard .card a,
+.carwash-dashboard table a {
     text-decoration: none;
 }
 
-.carwash_dashboard .card a:focus,
-.carwash_dashboard table a:focus {
+.carwash-dashboard .card a:focus,
+.carwash-dashboard table a:focus {
     box-shadow: none;
 }
 
-.carwash_dashboard table {
+.carwash-dashboard table {
     display: block;
 }

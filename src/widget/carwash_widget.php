@@ -1,4 +1,4 @@
-<div class="carwash_dashboard">
+<div class="carwash-dashboard">
     <div class="row">
         <div class="col-6">
             <div class="card text-center">

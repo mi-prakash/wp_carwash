@@ -1,7 +1,7 @@
 ; (function ($) {
     $(document).ready(function () {
         var service_index = $('.select-service').length;
-        $(".carwash_form.package_meta .add-more").on("click", function () {
+        $(".carwash-form.package-meta .add-more").on("click", function () {
             $(".clone-service .service-container").attr("id", "container-" + service_index);
             $(".clone-service label").attr("for", "carwash_service_ids-" + service_index);
             $(".clone-service select").attr("id", "carwash_service_ids-" + service_index);
@@ -14,7 +14,7 @@
             service_index++;
         });
 
-        $(".postbox").on("click", ".carwash_form.package_meta .remove", function () {
+        $(".postbox").on("click", ".carwash-form.package-meta .remove", function () {
             var index = $(this).data('index');
             var text = carwash_info.confirm_text;
             if (confirm(text) == true) {

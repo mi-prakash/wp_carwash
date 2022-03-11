@@ -1,4 +1,4 @@
-<div class="carwash_form service_meta">
+<div class="carwash-form service_meta">
     <label for="carwash_car_id"><?= $label_car ?></label>
     <select name="carwash_car_id" id="carwash_car_id">
         <?php

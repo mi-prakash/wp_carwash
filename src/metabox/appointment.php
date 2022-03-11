@@ -1,4 +1,4 @@
-<div class="carwash_form appointment_meta">
+<div class="carwash-form appointment_meta">
     <label for="post_title"><?= $label_apt_no ?></label>
     <input type="text" name="post_title" id="post_title" value="<?= $apt_no ?>" readonly />
 
