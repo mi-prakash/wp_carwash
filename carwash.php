@@ -18,7 +18,7 @@
 
 require_once('vendor/autoload.php');
 
-use Carwash\CarwashHelper;
+use Carwash\Carwash_Helper;
 
 define('CARWASH_ASSETS_DIR', plugin_dir_url(__FILE__) . 'assets/');
 
@@ -232,7 +232,7 @@ class Carwash
 
 		$data['appointments'] = $appointments;
 
-		CarwashHelper::View('widget/carwash_widget', $data);
+		Carwash_Helper::View('widget/carwash_widget', $data);
 		// exit;
 	}
 
@@ -456,7 +456,7 @@ class Carwash
 		$args = array('posts_per_page' => -1, 'post_type' => 'car');
 		$data['cars'] = get_posts($args);
 
-		CarwashHelper::View('metabox/service', $data);
+		Carwash_Helper::View('metabox/service', $data);
 	}
 
 	/**
@@ -467,13 +467,13 @@ class Carwash
 	 */
 	public function save_service_metadata($post_id)
 	{
-		if (!CarwashHelper::is_secured('carwash_service_token', 'carwash_service', $post_id)) {
+		if (!Carwash_Helper::is_secured('carwash_service_token', 'carwash_service', $post_id)) {
 			return $post_id;
 		}
 
-		$car_id = CarwashHelper::Input('carwash_car_id');
-		$price = CarwashHelper::Input('carwash_price');
-		$time = CarwashHelper::Input('carwash_time');
+		$car_id = Carwash_Helper::Input('carwash_car_id');
+		$price = Carwash_Helper::Input('carwash_price');
+		$time = Carwash_Helper::Input('carwash_time');
 
 		if ($car_id == 0 || $price == 0 || $time == 0) {
 			return $post_id;
@@ -616,7 +616,7 @@ class Carwash
 		$args = array('posts_per_page' => -1, 'post_type' => 'service');
 		$data['services'] = get_posts($args);
 
-		CarwashHelper::View('metabox/package', $data);
+		Carwash_Helper::View('metabox/package', $data);
 	}
 
 	/**
@@ -628,13 +628,13 @@ class Carwash
 	public function save_package_metadata($post_id)
 	{
 
-		if (!CarwashHelper::is_secured('carwash_package_token', 'carwash_package', $post_id)) {
+		if (!Carwash_Helper::is_secured('carwash_package_token', 'carwash_package', $post_id)) {
 			return $post_id;
 		}
-		if (!is_array(CarwashHelper::Input('carwash_service_ids'))) {
+		if (!is_array(Carwash_Helper::Input('carwash_service_ids'))) {
 			return $post_id;
 		}
-		$service_ids = CarwashHelper::Input('carwash_service_ids');
+		$service_ids = Carwash_Helper::Input('carwash_service_ids');
 
 		if (empty($service_ids)) {
 			return $post_id;
@@ -857,9 +857,9 @@ class Carwash
 
 		wp_nonce_field('carwash_appointment', 'carwash_appointment_token');
 
-		$data['status_fields'] = CarwashHelper::GetAppointmentStatusFields();
+		$data['status_fields'] = Carwash_Helper::GetAppointmentStatusFields();
 
-		CarwashHelper::View('metabox/appointment', $data);
+		Carwash_Helper::View('metabox/appointment', $data);
 	}
 
 	/**
@@ -871,11 +871,11 @@ class Carwash
 	public function save_appointment_metadata($post_id)
 	{
 
-		if (!CarwashHelper::is_secured('carwash_appointment_token', 'carwash_appointment', $post_id)) {
+		if (!Carwash_Helper::is_secured('carwash_appointment_token', 'carwash_appointment', $post_id)) {
 			return $post_id;
 		}
 
-		$status = CarwashHelper::Input('carwash_status');
+		$status = Carwash_Helper::Input('carwash_status');
 
 		if (empty($status)) {
 			return $post_id;
@@ -921,10 +921,10 @@ class Carwash
 		ob_start();
 		if (is_user_logged_in()) {
 			$data['page_info'] = __('Make Appointment from the following Packages', 'carwash');
-			CarwashHelper::View('front/appointment/index', $data);
+			Carwash_Helper::View('front/appointment/index', $data);
 		} else {
 			$data['page_info'] = __('Please Log In to make an Appointment', 'carwash');
-			CarwashHelper::View('front/auth/index', $data);
+			Carwash_Helper::View('front/auth/index', $data);
 		}
 		return ob_get_clean();
 	}
@@ -936,20 +936,20 @@ class Carwash
 	 */
 	public function carwash_add_appointment()
 	{
-		if (!CarwashHelper::is_secured('carwash_appointment_token', 'carwash_front_appointment')) {
+		if (!Carwash_Helper::is_secured('carwash_appointment_token', 'carwash_front_appointment')) {
 			$response = array(
 				'success'   => false,
 				'message'   => __('Token verification failed!', 'carwash')
 			);
 			echo json_encode($response);
 		} else {
-			$package_id = CarwashHelper::Input('package_id');
-			$customer_name = CarwashHelper::Input('customer_name');
-			$email = CarwashHelper::Input('email');
-			$apt_date = CarwashHelper::Input('apt_date');
-			$apt_time = CarwashHelper::Input('apt_time');
-			$price = CarwashHelper::Input('price');
-			$time = CarwashHelper::Input('time');
+			$package_id = Carwash_Helper::Input('package_id');
+			$customer_name = Carwash_Helper::Input('customer_name');
+			$email = Carwash_Helper::Input('email');
+			$apt_date = Carwash_Helper::Input('apt_date');
+			$apt_time = Carwash_Helper::Input('apt_time');
+			$price = Carwash_Helper::Input('price');
+			$time = Carwash_Helper::Input('time');
 			$status = 'pending';
 
 			// Create post object with the form values
@@ -1026,15 +1026,15 @@ class Carwash
 	 */
 	public function carwash_front_login()
 	{
-		if (!CarwashHelper::is_secured('carwash_login_token', 'carwash_front_login')) {
+		if (!Carwash_Helper::is_secured('carwash_login_token', 'carwash_front_login')) {
 			$response = array(
 				'success'   => false,
 				'message'   => __('Token verification failed!', 'carwash')
 			);
 			echo json_encode($response);
 		} else {
-			$username = CarwashHelper::Input('username');
-			$password = CarwashHelper::Input('password');
+			$username = Carwash_Helper::Input('username');
+			$password = Carwash_Helper::Input('password');
 
 			$user = wp_signon(array(
 				'user_login'    => $username,
@@ -1068,16 +1068,16 @@ class Carwash
 	 */
 	public function carwash_front_registration()
 	{
-		if (!CarwashHelper::is_secured('carwash_register_token', 'carwash_front_register')) {
+		if (!Carwash_Helper::is_secured('carwash_register_token', 'carwash_front_register')) {
 			$response = array(
 				'success'   => false,
 				'message'   => __('Token verification failed!', 'carwash')
 			);
 			echo json_encode($response);
 		} else {
-			$email = CarwashHelper::Input('email');
-			$username = CarwashHelper::Input('username');
-			$password = CarwashHelper::Input('password');
+			$email = Carwash_Helper::Input('email');
+			$username = Carwash_Helper::Input('username');
+			$password = Carwash_Helper::Input('password');
 
 			$user_id = wp_create_user($username, $password, $email);
 			if (!$user_id) {

@@ -1,6 +1,7 @@
 <?php
 namespace Carwash;
-class CarwashHelper 
+
+class Carwash_Helper 
 {
 	/**
 	 * Construct function
