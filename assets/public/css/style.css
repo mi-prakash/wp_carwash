@@ -1,35 +1,35 @@
 .carwash-appointment .table-appointment {
-    font-size: 10px;
+	font-size: 10px;
 }
 
 #appointmentModal .modal-body {
-    font-size: 12px;
+	font-size: 12px;
 }
 
 #appointmentModal .modal-body input,
 #appointmentModal .modal-body select {
-    padding: 4px;
+	padding: 4px;
 }
 
 .hidden {
-    display: none !important;
+	display: none !important;
 }
 
 .form-control-sm {
-    padding: 5px !important;
+	padding: 5px !important;
 }
 
 .carwash-alert {
-    position: fixed;
-    top: 35px;
-    right: 10px;
-    z-index: 99999;
+	position: fixed;
+	top: 35px;
+	right: 10px;
+	z-index: 99999;
 }
 
 .carwash-alert .alert-txt {
-    padding-right: 10px;
+	padding-right: 10px;
 }
 
 .carwash-alert .btn-close:hover {
-    background: #ececec url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat !important;
+	background: #ececec url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat !important;
 }

@@ -1,7 +1,7 @@
 {
-    "autoload": {
-        "psr-4": {
-            "Carwash\\": "src/"
-        }
-    }
+	"autoload": {
+		"psr-4": {
+			"Carwash\\": "src/"
+		}
+	}
 }

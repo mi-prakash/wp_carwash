@@ -2,13 +2,13 @@
 	$(document).ready(function() {
 		checkIfLoggedInOrRegister();
 		var max_height = 0;
-		$(".carwash-appointment .card-body").each(function() {
+		$(".carwash-appointment .card-content").each(function() {
 			var height = $(this).height();
 			if (height > max_height) {
 				max_height += height;
 			}
 		});
-		$(".carwash-appointment .card-body").height(max_height);
+		$(".carwash-appointment .card-content").height(max_height);
 
 		// Populating Modal data on clicking appointment btn 
 		$(".carwash-appointment .apt-btn").on("click", function() {
