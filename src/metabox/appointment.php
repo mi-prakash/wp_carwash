@@ -1,26 +1,26 @@
 <div class="carwash-form appointment_meta">
-	<label for="post_title"><?= $label_apt_no ?></label>
-	<input type="text" name="post_title" id="post_title" value="<?= $apt_no ?>" readonly />
+	<label for="post_title"><?php echo $label_apt_no ?></label>
+	<input type="text" name="post_title" id="post_title" value="<?php echo $apt_no ?>" readonly />
 
-	<label for="carwash_package_name"><?= $label_package_name ?></label>
-	<input type="text" name="carwash_package_name" id="carwash_package_name" value="<?= $package_name ?>" readonly />
+	<label for="carwash_package_name"><?php echo $label_package_name ?></label>
+	<input type="text" name="carwash_package_name" id="carwash_package_name" value="<?php echo $package_name ?>" readonly />
 
-	<label for="carwash_customer_name"><?= $label_customer_name ?></label>
-	<input type="text" name="carwash_customer_name" id="carwash_customer_name" value="<?= $customer_name ?>" readonly />
+	<label for="carwash_customer_name"><?php echo $label_customer_name ?></label>
+	<input type="text" name="carwash_customer_name" id="carwash_customer_name" value="<?php echo $customer_name ?>" readonly />
 
-	<label for="carwash_email"><?= $label_email ?></label>
-	<input type="text" name="carwash_email" id="carwash_email" value="<?= $email ?>" readonly />
+	<label for="carwash_email"><?php echo $label_email ?></label>
+	<input type="text" name="carwash_email" id="carwash_email" value="<?php echo $email ?>" readonly />
 
-	<label for="carwash_apt_datetime"><?= $label_apt_datetime ?></label>
-	<input type="text" name="carwash_apt_datetime" id="carwash_apt_datetime" value="<?= $apt_date.' '.$apt_time ?>" readonly />
+	<label for="carwash_apt_datetime"><?php echo $label_apt_datetime ?></label>
+	<input type="text" name="carwash_apt_datetime" id="carwash_apt_datetime" value="<?php echo $apt_date.' '.$apt_time ?>" readonly />
 
-	<label for="carwash_price"><?= $label_price ?></label>
-	<input type="text" name="carwash_price" id="carwash_price" value="<?= $price ?>" readonly />
+	<label for="carwash_price"><?php echo $label_price ?></label>
+	<input type="text" name="carwash_price" id="carwash_price" value="<?php echo $price ?>" readonly />
 
-	<label for="carwash_time"><?= $label_time ?></label>
-	<input type="text" name="carwash_time" id="carwash_time" value="<?= $time ?>" readonly />
+	<label for="carwash_time"><?php echo $label_time ?></label>
+	<input type="text" name="carwash_time" id="carwash_time" value="<?php echo $time ?>" readonly />
 
-	<label for="carwash_status"><?= $label_status ?></label>
+	<label for="carwash_status"><?php echo $label_status ?></label>
 	<select name="carwash_status" id="carwash_status">
 		<?php
 		if ($status_fields) {
@@ -31,7 +31,7 @@
 					$selected = '';
 				}
 		?>
-				<option value="<?= $key ?>" <?= $selected ?>><?= $value ?></option>
+				<option value="<?php echo $key ?>" <?php echo $selected ?>><?php echo $value ?></option>
 		<?php
 			}
 		}
