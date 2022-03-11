@@ -1,4 +1,4 @@
-; (function ($) {
+(function ($) {
 	$(document).ready(function () {
 		var service_index = $('.select-service').length;
 		$(".carwash-form.package-meta .add-more").on("click", function () {

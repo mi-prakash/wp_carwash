@@ -1,17 +1,9 @@
-;(function($) {
-	$(document).ready(function() {
+(function ($) {
+	$(document).ready(function () {
 		checkIfLoggedInOrRegister();
-		var max_height = 0;
-		$(".carwash-appointment .card-content").each(function() {
-			var height = $(this).height();
-			if (height > max_height) {
-				max_height += height;
-			}
-		});
-		$(".carwash-appointment .card-content").height(max_height);
 
 		// Populating Modal data on clicking appointment btn 
-		$(".carwash-appointment .apt-btn").on("click", function() {
+		$(".carwash-appointment .apt-btn").on("click", function () {
 			$(".response-txt").html("");
 			var pack_id = $(this).data('id');
 			var pack_name = $(this).data('pack-name');
@@ -31,7 +23,7 @@
 		});
 
 		// Handle Ajax request for Appointment
-		$("#appointmentModal form").on("submit", function(e) {
+		$("#appointmentModal form").on("submit", function (e) {
 			e.preventDefault();
 			var data = "action=carwash_add_appointment&" + $(this).serialize();
 			var close_btn = $("#appointmentModal .btn-exit");
@@ -42,12 +34,12 @@
 				url: carwash_info.ajax_url,
 				type: 'POST',
 				data: data,
-				beforeSend: function() {
+				beforeSend: function () {
 					close_btn.attr('disabled', 'disabled');
 					submit_btn.attr('disabled', 'disabled');
 					submit_btn.text(carwash_info.processing_text);
-				},			
-				success: function(response) {
+				},
+				success: function (response) {
 					var obj = JSON.parse(response);
 					if (obj.success) {
 						showAlert('success', obj.message);
@@ -63,7 +55,7 @@
 		});
 
 		// Handle Ajax request for Login
-		$("#loginModal form").on("submit", function(e) {
+		$("#loginModal form").on("submit", function (e) {
 			e.preventDefault();
 			var data = "action=carwash_front_login&" + $(this).serialize();
 			var close_btn = $("#loginModal .btn-exit");
@@ -74,12 +66,12 @@
 				url: carwash_info.ajax_url,
 				type: 'POST',
 				data: data,
-				beforeSend: function() {
+				beforeSend: function () {
 					close_btn.attr('disabled', 'disabled');
 					submit_btn.attr('disabled', 'disabled');
 					submit_btn.text(carwash_info.processing_text);
-				},			
-				success: function(response) {
+				},
+				success: function (response) {
 					var obj = JSON.parse(response);
 					close_btn.removeAttr('disabled');
 					submit_btn.removeAttr('disabled');
@@ -96,7 +88,7 @@
 		});
 
 		// Handle Ajax request for Registration
-		$("#registerModal form").on("submit", function(e) {
+		$("#registerModal form").on("submit", function (e) {
 			e.preventDefault();
 			var data = "action=carwash_front_registration&" + $(this).serialize();
 			var close_btn = $("#registerModal .btn-exit");
@@ -107,12 +99,12 @@
 				url: carwash_info.ajax_url,
 				type: 'POST',
 				data: data,
-				beforeSend: function() {
+				beforeSend: function () {
 					close_btn.attr('disabled', 'disabled');
 					submit_btn.attr('disabled', 'disabled');
 					submit_btn.text(carwash_info.processing_text);
-				},			
-				success: function(response) {
+				},
+				success: function (response) {
 					var obj = JSON.parse(response);
 					close_btn.removeAttr('disabled');
 					submit_btn.removeAttr('disabled');
@@ -127,15 +119,26 @@
 				}
 			});
 		});
-		
+
+	});
+
+	$(window).load(function () {
+		var max_height = 0;
+		$(".carwash-appointment .card-content").each(function () {
+			var height = $(this).height();
+			if (height > max_height) {
+				max_height += height;
+			}
+		});
+		$(".carwash-appointment .card-content").height(max_height);
 	});
 
 	function showAlert(style, text) {
-		var alert = $(".carwash-"+style+"-alert");
-		var alert_text = $(".carwash-"+style+"-alert .alert-txt");
+		var alert = $(".carwash-" + style + "-alert");
+		var alert_text = $(".carwash-" + style + "-alert .alert-txt");
 		alert_text.text(text);
 		alert.removeClass('hidden');
-		setTimeout(function() {
+		setTimeout(function () {
 			alert.addClass('hidden');
 			alert_text.text('');
 		}, 5000);

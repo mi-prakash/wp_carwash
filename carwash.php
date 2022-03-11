@@ -223,7 +223,7 @@ class Carwash
 
 			$apt_date = get_post_meta($appointment->ID, 'carwash_apt_date', true);
 			$apt_time = get_post_meta($appointment->ID, 'carwash_apt_time', true);
-			$appointments[$key]->apt_date_time = date('d/m/Y', strtotime($apt_date)) . '<br>' . date('h:i A', strtotime($apt_time));
+			$appointments[$key]->apt_date_time = date('d/m/Y', strtotime($apt_date)) . '<br />' . date('h:i A', strtotime($apt_time));
 
 			$time = get_post_meta($appointment->ID, 'carwash_time', true);
 			$appointments[$key]->time = is_numeric($time) ? $time . ' mins' : '00 mins';
@@ -779,7 +779,7 @@ class Carwash
 			case 'apt_date_time':
 				$apt_date = get_post_meta($post_id, 'carwash_apt_date', true);
 				$apt_time = get_post_meta($post_id, 'carwash_apt_time', true);
-				echo date('d/m/Y', strtotime($apt_date)) . '<br>' . date('h:i A', strtotime($apt_time));
+				echo date('d/m/Y', strtotime($apt_date)) . '<br />' . date('h:i A', strtotime($apt_time));
 				break;
 			case 'price':
 				$price = get_post_meta($post_id, 'carwash_price', true);
