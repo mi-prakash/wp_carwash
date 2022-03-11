@@ -174,9 +174,12 @@ class Carwash
     {
         wp_enqueue_style('carwash-main-css', CARWASH_ASSETS_DIR . 'admin/css/style.css', null, $this->version);
         wp_enqueue_script('carwash-main-js', CARWASH_ASSETS_DIR . 'admin/js/main.js', array('jquery'), $this->version, true);
-
+        
         // Pass data to js file
-        $data = array('confirm_text' => __('Are you sure?', 'carwash'));
+        $data = array(
+            'confirm_text'  => __('Are you sure?', 'carwash'),
+            'nonce'         => wp_create_nonce('wp_rest')
+        );
         wp_localize_script('carwash-main-js', 'carwash_info', $data);
     }
 

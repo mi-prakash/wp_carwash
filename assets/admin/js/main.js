@@ -22,5 +22,24 @@
             }
         });
 
+        // testApi();
+
     });
+
+    function testApi() {
+        console.log('called');
+
+        $.ajax({
+            url: 'http://wp_carwash.test/wp-json/wp/v2/car/234?_method=DELETE',
+            method: 'POST',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('X-WP-Nonce', carwash_info.nonce);
+            },
+            data: {
+                'title': 'Hello Api'
+            }
+        }).done(function (response) {
+            console.log(response);
+        });
+    }
 })(jQuery);
