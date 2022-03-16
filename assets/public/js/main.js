@@ -40,8 +40,13 @@
 					submit_btn.text(carwash_info.processing_text);
 				},
 				success: function (response) {
-					var obj = JSON.parse(response);
+					var obj = JSON.parse(JSON.stringify(response));
 					if (obj.success) {
+						console.log(obj.data);
+						if (typeof(obj.data.stripe_payment_url) != "undefined" && obj.data.stripe_payment_url !== null) {
+							window.location.href = obj.data.stripe_payment_url;
+							return;
+						}
 						showAlert('success', obj.message);
 					} else {
 						showAlert('danger', obj.message);

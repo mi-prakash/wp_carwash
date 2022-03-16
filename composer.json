@@ -3,5 +3,8 @@
 		"psr-4": {
 			"Carwash\\": "src/"
 		}
+	},
+	"require": {
+		"stripe/stripe-php": "^7.116"
 	}
 }

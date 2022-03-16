@@ -19,9 +19,11 @@
 require_once('vendor/autoload.php');
 
 use Carwash\Carwash_Helper;
+use Stripe\Stripe;
+use Stripe\Checkout\Session;
 
 define('CARWASH_ASSETS_DIR', plugin_dir_url(__FILE__) . 'assets/');
-
+define('STRIPE_API_KEY', 'sk_test_51Kd6X1HfN5QHqXJfvhihYouRC9JBtnftssnXOMqrKa4A16a0PtSOKKtzvqaCYq2E1L7tUnWogysVBbwevNf7qsfK0050rVkCqL');
 /**
  * Carwash class
  * 
@@ -751,6 +753,7 @@ class Carwash
 		// $columns['price'] = __('Total Price', 'carwash');
 		// $columns['time'] = __('Total Time', 'carwash');
 		$columns['status'] = __('Status', 'carwash');
+		$columns['payment'] = __('Payment Status', 'carwash');
 		$columns['date'] = __('Date', 'carwash');
 
 		return $columns;
@@ -793,13 +796,25 @@ class Carwash
 				$status = get_post_meta($post_id, 'carwash_status', true);
 				$class_name = '';
 				if ($status == 'pending') {
-					$class_name = 'text-danger';
+					$class_name = 'text-warning';
 				} elseif ($status == 'processing') {
 					$class_name = 'text-primary';
 				} elseif ($status == 'completed') {
 					$class_name = 'text-success';
 				}
 				echo '<span class="' . $class_name . '">' . ucfirst($status) . '</span>';
+				break;
+			case 'payment':
+				$payment = get_post_meta($post_id, 'carwash_payment', true);
+				$class_name = '';
+				if ($payment == 'pending') {
+					$class_name = 'text-warning';
+				} elseif ($payment == 'success') {
+					$class_name = 'text-success';
+				} elseif ($payment == 'canceled') {
+					$class_name = 'text-danger';
+				}
+				echo '<span class="' . $class_name . '">' . ucfirst($payment) . '</span>';
 				break;
 		}
 	}
@@ -853,7 +868,10 @@ class Carwash
 		$data['label_time'] = __('Total Time', 'carwash');
 
 		$data['status'] = get_post_meta($post->ID, 'carwash_status', true);
-		$data['label_status'] = __('status', 'carwash');
+		$data['label_status'] = __('Status', 'carwash');
+
+		$data['payment'] = get_post_meta($post->ID, 'carwash_payment', true);
+		$data['label_payment'] = __('Payment Status', 'carwash');
 
 		wp_nonce_field('carwash_appointment', 'carwash_appointment_token');
 
@@ -969,6 +987,7 @@ class Carwash
 			update_post_meta($appointment_id, 'carwash_price', $price);
 			update_post_meta($appointment_id, 'carwash_time', $time);
 			update_post_meta($appointment_id, 'carwash_status', $status);
+			update_post_meta($appointment_id, 'carwash_payment', 'pending');
 
 			$args = array(
 				'to'        => $email,
@@ -984,15 +1003,28 @@ class Carwash
 			$message = __('Successfully submitted! Email sent to ' . $email, 'carwash');
 
 			if (!$is_email_send) {
-				__('Successfully submitted! <span class="text-danger">Failed to send Email to </span>' . $email, 'carwash');
+				$message = __('Successfully submitted! <span class="text-danger">Failed to send Email to </span>' . $email, 'carwash');
 			}
 
-			$response = array(
-				'success'   => true,
-				'message'   => $message,
-				'data'      => null
-			);
+			// Stripe Payment functionality
+			$stripe_payment_url = $this->StripePayment($appointment_id);
 
+			if ($stripe_payment_url) {
+				$response = array(
+					'success'   => true,
+					'message'   => $message,
+					'data'      => array(
+						'stripe_payment_url' => $stripe_payment_url
+					)
+				);
+			} else {
+				$response = array(
+					'success'   => true,
+					'message'   => $message,
+					'data'      => null
+				);
+			}
+			
 			echo json_encode($response);
 		}
 
@@ -1018,6 +1050,59 @@ class Carwash
 		$email_status = wp_mail($to, $subject, $message);
 
 		return $email_status;
+	}
+
+	/**
+	 * Stripe Payment function
+	 *
+	 * @param int $appointment_id
+	 * @return string|bool
+	 */
+	public function StripePayment($appointment_id)
+	{
+		$appointment_title = get_post_field('post_title', $appointment_id);
+
+		$price = get_post_meta($appointment_id, 'carwash_price', true);
+		$price = is_numeric($price) ? $price : 0;
+
+		$package_id = get_post_meta($appointment_id, 'carwash_package_id', true);
+		$package_name = get_post_field('post_title', $package_id);
+
+		Stripe::setApiKey(STRIPE_API_KEY);
+
+		header('Content-Type: application/json');
+
+		$checkout_session = Session::create([
+			'line_items' => [[
+				'price_data' => [
+				'currency' => 'usd',
+				'unit_amount' => $price * 100, // Convert to cent
+				'product_data' => ['name' => $package_name],
+				],
+				'quantity' => 1,
+			]],
+			'mode' => 'payment',
+			'success_url' => site_url() . '/stripe-payment-success',
+			'cancel_url' => site_url() . '/stripe-payment-cancel',
+			'metadata' => [
+				'id' => $appointment_id, 
+				'appointment_id'=> $appointment_title,
+				'package_name' => $package_name
+			]
+		]);
+
+		if ($checkout_session) {
+			// Setting session for storing Stripe session_id
+			session_start();
+			$_SESSION["stripe_session_id"] = $checkout_session->id;
+
+			return $checkout_session->url;
+		} else {
+			return false;
+		}
+
+		// header("HTTP/1.1 303 See Other");
+		// header("Location: " . $checkout_session->url);
 	}
 
 	/**
@@ -1111,7 +1196,9 @@ class Carwash
 	}
 }
 
-new Carwash();
+$carwash = new Carwash();
+
+// $carwash->StripePayment();
 
 /**
  * Function to add Custom Role in Plugin activation
