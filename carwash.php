@@ -24,6 +24,7 @@ use Stripe\Checkout\Session;
 
 define('CARWASH_ASSETS_DIR', plugin_dir_url(__FILE__) . 'assets/');
 define('STRIPE_API_KEY', 'sk_test_51Kd6X1HfN5QHqXJfvhihYouRC9JBtnftssnXOMqrKa4A16a0PtSOKKtzvqaCYq2E1L7tUnWogysVBbwevNf7qsfK0050rVkCqL');
+
 /**
  * Carwash class
  * 
@@ -1120,9 +1121,6 @@ class Carwash
 		} else {
 			return false;
 		}
-
-		// header("HTTP/1.1 303 See Other");
-		// header("Location: " . $checkout_session->url);
 	}
 
 	/**
@@ -1276,9 +1274,7 @@ class Carwash
 	}
 }
 
-$carwash = new Carwash();
-
-// $carwash->StripePayment();
+new Carwash();
 
 /**
  * Function to add Custom Role in Plugin activation
@@ -1294,4 +1290,5 @@ function carwash_plugin_activate()
 	add_role('customer', __('Customer', 'carwash'), $caps);
 }
 
+// Hook after plugin is activated
 register_activation_hook(__FILE__, 'carwash_plugin_activate');
