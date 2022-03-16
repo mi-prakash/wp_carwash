@@ -16,8 +16,8 @@
 			$(".r_price").val(price);
 			$(".r_time").val(time);
 
-			$(".customer_name").val("");
-			$(".email").val("");
+			$(".customer_name").val(carwash_info.current_user_nicename);
+			$(".email").val(carwash_info.current_user_email);
 			$(".apt_date").val("");
 			$(".apt_time").val("");
 		});

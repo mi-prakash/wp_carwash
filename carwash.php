@@ -280,14 +280,24 @@ class Carwash
 		wp_enqueue_style('carwash-front-main-css', CARWASH_ASSETS_DIR . 'public/css/style.css', null, $this->version);
 		wp_enqueue_script('carwash-front-main-js', CARWASH_ASSETS_DIR . 'public/js/main.js', array('jquery'), $this->version, true);
 
+		$current_user_nicename = '';
+		$current_user_email = '';
+		if (is_user_logged_in()) {
+			$current_user = wp_get_current_user();
+			$current_user_nicename = $current_user->data->user_nicename;
+			$current_user_email = $current_user->data->user_email;
+		}
+
 		// Pass data to js file
 		$data = array(
-			'ajax_url'              => admin_url('admin-ajax.php'),
-			'confirm_text'          => __('Are you sure?', 'carwash'),
-			'processing_text'       => __('Processing...', 'carwash'),
-			'submit_text'           => __('Submit', 'carwash'),
-			'login_success_text'    => __('Successfully Logged In', 'carwash'),
-			'register_success_text' => __('Successfully Registered', 'carwash'),
+			'ajax_url'				=> admin_url('admin-ajax.php'),
+			'confirm_text'			=> __('Are you sure?', 'carwash'),
+			'processing_text'		=> __('Processing...', 'carwash'),
+			'submit_text'			=> __('Submit', 'carwash'),
+			'login_success_text'	=> __('Successfully Logged In', 'carwash'),
+			'register_success_text'	=> __('Successfully Registered', 'carwash'),
+			'current_user_nicename'	=> $current_user_nicename,
+			'current_user_email'	=> $current_user_email,
 		);
 		wp_localize_script('carwash-front-main-js', 'carwash_info', $data);
 	}
@@ -761,7 +771,7 @@ class Carwash
 		// $columns['email'] = __('Email', 'carwash');
 		$columns['apt_date_time'] = __('Apt. Datetime', 'carwash');
 		// $columns['price'] = __('Total Price', 'carwash');
-		// $columns['time'] = __('Total Time', 'carwash');
+		$columns['time'] = __('Total Time', 'carwash');
 		$columns['status'] = __('Status', 'carwash');
 		$columns['payment'] = __('Payment Status', 'carwash');
 		$columns['date'] = __('Date', 'carwash');
