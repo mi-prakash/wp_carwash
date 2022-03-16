@@ -110,43 +110,6 @@ class Carwash
 		add_filter('template_include', array($this, 'carwash_stripe_cancel_template_include'), 1, 1);
 	}
 
-	public function carwash_rewrite_rules()
-	{
-		add_rewrite_rule('stripe-payment-success/?$', 'index.php?stripe-payment-success=true', 'top');
-		add_rewrite_rule('stripe-payment-cancel/?$', 'index.php?stripe-payment-cancel=true', 'top');
-	}
-
-	public function carwash_register_query_var($vars)
-	{
-		$vars[] = 'stripe-payment-success';
-		$vars[] = 'stripe-payment-cancel';
-    	return $vars;
-	}
-
-	public function carwash_stripe_success_template_include($template)
-	{
-		global $wp_query; //Load $wp_query object
-		if (isset($wp_query->query_vars['stripe-payment-success'])) {
-			$page_value = $wp_query->query_vars['stripe-payment-success']; //Check for query var "stripe-payment-success"
-			if ($page_value && $page_value == "true") { //Verify "stripe-payment-success" exists and value is "true".
-				return plugin_dir_path(__FILE__).'src/front/stripe/success.php'; //Load your template or file
-			}
-		}
-		return $template; //Load normal template when $page_value != "true" as a fallback	
-	}
-
-	public function carwash_stripe_cancel_template_include($template)
-	{
-		global $wp_query; //Load $wp_query object
-		if (isset($wp_query->query_vars['stripe-payment-cancel'])) {
-			$page_value = $wp_query->query_vars['stripe-payment-cancel']; //Check for query var "stripe-payment-cancel"
-			if ($page_value && $page_value == "true") { //Verify "stripe-payment-cancel" exists and value is "true".
-				return plugin_dir_path(__FILE__).'src/front/stripe/cancel.php'; //Load your template or file
-			}
-		}
-		return $template; //Load normal template when $page_value != "true" as a fallback
-	}
-
 	/**
 	 * Function to load Textdomain
 	 *
@@ -1240,6 +1203,66 @@ class Carwash
 		}
 
 		exit;
+	}
+
+	/**
+	 * Rewrite Rules function for Stripe Success/Cancel page
+	 *
+	 * @return void
+	 */
+	public function carwash_rewrite_rules()
+	{
+		add_rewrite_rule('stripe-payment-success/?$', 'index.php?stripe-payment-success=true', 'top');
+		add_rewrite_rule('stripe-payment-cancel/?$', 'index.php?stripe-payment-cancel=true', 'top');
+	}
+
+	/**
+	 * Function for Registering query variables
+	 *
+	 * @param array $vars
+	 * @return array
+	 */
+	public function carwash_register_query_var($vars)
+	{
+		$vars[] = 'stripe-payment-success';
+		$vars[] = 'stripe-payment-cancel';
+    	return $vars;
+	}
+
+	/**
+	 * Function to view Stripe Success page
+	 *
+	 * @param string $template
+	 * @return string
+	 */
+	public function carwash_stripe_success_template_include($template)
+	{
+		global $wp_query; //Load $wp_query object
+		if (isset($wp_query->query_vars['stripe-payment-success'])) {
+			$page_value = $wp_query->query_vars['stripe-payment-success']; //Check for query var "stripe-payment-success"
+			if ($page_value && $page_value == "true") { //Verify "stripe-payment-success" exists and value is "true".
+				return plugin_dir_path(__FILE__).'src/front/stripe/success.php'; //Load your template or file
+			}
+		}
+		return $template; //Load normal template when $page_value != "true" as a fallback	
+	}
+
+	/**
+	 * Function to view Stripe Cancel page
+	 *
+	 * @param string $template
+	 * @return string
+	 */
+	public function carwash_stripe_cancel_template_include($template)
+	{
+		global $wp_query; //Load $wp_query object
+		if (isset($wp_query->query_vars['stripe-payment-cancel'])) {
+			$page_value = $wp_query->query_vars['stripe-payment-cancel']; //Check for query var "stripe-payment-cancel"
+			if ($page_value && $page_value == "true") { //Verify "stripe-payment-cancel" exists and value is "true".
+				return plugin_dir_path(__FILE__).'src/front/stripe/cancel.php'; //Load your template or file
+			}
+		}
+		return $template; //Load normal template when $page_value != "true" as a fallback
 	}
 }
 
