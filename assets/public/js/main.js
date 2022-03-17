@@ -28,6 +28,7 @@
 			var data = "action=carwash_add_appointment&" + $(this).serialize();
 			var close_btn = $("#appointmentModal .btn-exit");
 			var submit_btn = $("#appointmentModal .btn-submit");
+			var input_fields = $("#appointmentModal input");
 			var modal_main = $("#appointmentModal .modal-body .main");
 			var modal_response = $("#appointmentModal .modal-body .response");
 			$.ajax({
@@ -37,6 +38,7 @@
 				beforeSend: function () {
 					close_btn.attr('disabled', 'disabled');
 					submit_btn.attr('disabled', 'disabled');
+					input_fields.attr('disabled', 'disabled');
 					submit_btn.text(carwash_info.processing_text);
 				},
 				success: function (response) {
@@ -53,6 +55,7 @@
 					}
 					close_btn.removeAttr('disabled');
 					submit_btn.removeAttr('disabled');
+					input_fields.removeAttr('disabled');
 					close_btn.click();
 					submit_btn.text(carwash_info.submit_text);
 				}

@@ -348,7 +348,7 @@ class Carwash
 			"rewrite"               => array("slug" => "car", "with_front" => true),
 			"query_var"             => true,
 			"menu_icon"             => "dashicons-car",
-			"supports"              => array("title", "author", "thumbnail"),
+			"supports"              => array("title", "editor", "author", "thumbnail"),
 			"show_in_graphql"       => false,
 		];
 
