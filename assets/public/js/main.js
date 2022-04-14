@@ -130,7 +130,7 @@
 				max_height += height;
 			}
 		});
-		$(".carwash-appointment .card-content").height(max_height);
+		// $(".carwash-appointment .card-content").height(max_height);
 	});
 
 	function showAlert(style, text) {
