@@ -20,6 +20,19 @@
 	<label for="carwash_time"><?php echo $label_time ?></label>
 	<input type="text" name="carwash_time" id="carwash_time" value="<?php echo $time ?>" readonly />
 
+	<label for="carwash_payment"><?php echo $label_payment ?></label>
+	<?php 
+		$class_name = '';
+		if ($payment == 'pending') {
+			$class_name = 'text-warning';
+		} elseif ($payment == 'success') {
+			$class_name = 'text-success';
+		} elseif ($payment == 'canceled') {
+			$class_name = 'text-danger';
+		}
+	?>
+	<input type="text" class="<?php echo $class_name ?>" name="carwash_payment" id="carwash_payment" value="<?php echo ucfirst($payment) ?>" readonly />
+
 	<label for="carwash_status"><?php echo $label_status ?></label>
 	<select name="carwash_status" id="carwash_status">
 		<?php

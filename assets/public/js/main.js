@@ -16,8 +16,8 @@
 			$(".r_price").val(price);
 			$(".r_time").val(time);
 
-			$(".customer_name").val("");
-			$(".email").val("");
+			$(".customer_name").val(carwash_info.current_user_nicename);
+			$(".email").val(carwash_info.current_user_email);
 			$(".apt_date").val("");
 			$(".apt_time").val("");
 		});
@@ -28,6 +28,7 @@
 			var data = "action=carwash_add_appointment&" + $(this).serialize();
 			var close_btn = $("#appointmentModal .btn-exit");
 			var submit_btn = $("#appointmentModal .btn-submit");
+			var input_fields = $("#appointmentModal input");
 			var modal_main = $("#appointmentModal .modal-body .main");
 			var modal_response = $("#appointmentModal .modal-body .response");
 			$.ajax({
@@ -37,17 +38,24 @@
 				beforeSend: function () {
 					close_btn.attr('disabled', 'disabled');
 					submit_btn.attr('disabled', 'disabled');
+					input_fields.attr('disabled', 'disabled');
 					submit_btn.text(carwash_info.processing_text);
 				},
 				success: function (response) {
-					var obj = JSON.parse(response);
+					var obj = JSON.parse(JSON.stringify(response));
 					if (obj.success) {
+						console.log(obj.data);
+						if (typeof(obj.data.stripe_payment_url) != "undefined" && obj.data.stripe_payment_url !== null) {
+							window.location.href = obj.data.stripe_payment_url;
+							return;
+						}
 						showAlert('success', obj.message);
 					} else {
 						showAlert('danger', obj.message);
 					}
 					close_btn.removeAttr('disabled');
 					submit_btn.removeAttr('disabled');
+					input_fields.removeAttr('disabled');
 					close_btn.click();
 					submit_btn.text(carwash_info.submit_text);
 				}

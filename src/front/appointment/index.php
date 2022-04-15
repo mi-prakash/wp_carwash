@@ -63,7 +63,7 @@
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title text-dark" id="appointmentModalLabel">Modal title</h5>
+				<h5 class="modal-title text-dark" id="appointmentModalLabel"><?php echo __('Make Appointment', 'carwash') ?></h5>
 			</div>
 			<form method="POST">
 				<div class="modal-body text-dark">

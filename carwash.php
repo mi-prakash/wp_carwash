@@ -19,8 +19,11 @@
 require_once('vendor/autoload.php');
 
 use Carwash\Carwash_Helper;
+use Stripe\Stripe;
+use Stripe\Checkout\Session;
 
 define('CARWASH_ASSETS_DIR', plugin_dir_url(__FILE__) . 'assets/');
+define('STRIPE_API_KEY', 'sk_test_51Kd6X1HfN5QHqXJfvhihYouRC9JBtnftssnXOMqrKa4A16a0PtSOKKtzvqaCYq2E1L7tUnWogysVBbwevNf7qsfK0050rVkCqL');
 
 /**
  * Carwash class
@@ -96,6 +99,16 @@ class Carwash
 
 		// Ajax action for Frontend Registration
 		add_action('wp_ajax_nopriv_carwash_front_registration', array($this, 'carwash_front_registration'));
+
+		// Rewrite Rules
+		add_action('init', array($this, 'carwash_rewrite_rules'));
+
+		// Query Vars
+		add_filter('query_vars', array($this, 'carwash_register_query_var'));
+
+		// Template Include
+		add_filter('template_include', array($this, 'carwash_stripe_success_template_include'), 1, 1);
+		add_filter('template_include', array($this, 'carwash_stripe_cancel_template_include'), 1, 1);
 	}
 
 	/**
@@ -268,14 +281,24 @@ class Carwash
 		wp_enqueue_style('carwash-front-main-css', CARWASH_ASSETS_DIR . 'public/css/style.css', null, $this->version);
 		wp_enqueue_script('carwash-front-main-js', CARWASH_ASSETS_DIR . 'public/js/main.js', array('jquery'), $this->version, true);
 
+		$current_user_nicename = '';
+		$current_user_email = '';
+		if (is_user_logged_in()) {
+			$current_user = wp_get_current_user();
+			$current_user_nicename = $current_user->data->user_nicename;
+			$current_user_email = $current_user->data->user_email;
+		}
+
 		// Pass data to js file
 		$data = array(
-			'ajax_url'              => admin_url('admin-ajax.php'),
-			'confirm_text'          => __('Are you sure?', 'carwash'),
-			'processing_text'       => __('Processing...', 'carwash'),
-			'submit_text'           => __('Submit', 'carwash'),
-			'login_success_text'    => __('Successfully Logged In', 'carwash'),
-			'register_success_text' => __('Successfully Registered', 'carwash'),
+			'ajax_url'				=> admin_url('admin-ajax.php'),
+			'confirm_text'			=> __('Are you sure?', 'carwash'),
+			'processing_text'		=> __('Processing...', 'carwash'),
+			'submit_text'			=> __('Submit', 'carwash'),
+			'login_success_text'	=> __('Successfully Logged In', 'carwash'),
+			'register_success_text'	=> __('Successfully Registered', 'carwash'),
+			'current_user_nicename'	=> $current_user_nicename,
+			'current_user_email'	=> $current_user_email,
 		);
 		wp_localize_script('carwash-front-main-js', 'carwash_info', $data);
 	}
@@ -325,7 +348,7 @@ class Carwash
 			"rewrite"               => array("slug" => "car", "with_front" => true),
 			"query_var"             => true,
 			"menu_icon"             => "dashicons-car",
-			"supports"              => array("title", "author", "thumbnail"),
+			"supports"              => array("title", "editor", "author", "thumbnail"),
 			"show_in_graphql"       => false,
 		];
 
@@ -749,8 +772,9 @@ class Carwash
 		// $columns['email'] = __('Email', 'carwash');
 		$columns['apt_date_time'] = __('Apt. Datetime', 'carwash');
 		// $columns['price'] = __('Total Price', 'carwash');
-		// $columns['time'] = __('Total Time', 'carwash');
+		$columns['time'] = __('Total Time', 'carwash');
 		$columns['status'] = __('Status', 'carwash');
+		$columns['payment'] = __('Payment Status', 'carwash');
 		$columns['date'] = __('Date', 'carwash');
 
 		return $columns;
@@ -793,13 +817,25 @@ class Carwash
 				$status = get_post_meta($post_id, 'carwash_status', true);
 				$class_name = '';
 				if ($status == 'pending') {
-					$class_name = 'text-danger';
+					$class_name = 'text-warning';
 				} elseif ($status == 'processing') {
 					$class_name = 'text-primary';
 				} elseif ($status == 'completed') {
 					$class_name = 'text-success';
 				}
 				echo '<span class="' . $class_name . '">' . ucfirst($status) . '</span>';
+				break;
+			case 'payment':
+				$payment = get_post_meta($post_id, 'carwash_payment', true);
+				$class_name = '';
+				if ($payment == 'pending') {
+					$class_name = 'text-warning';
+				} elseif ($payment == 'success') {
+					$class_name = 'text-success';
+				} elseif ($payment == 'canceled') {
+					$class_name = 'text-danger';
+				}
+				echo '<span class="' . $class_name . '">' . ucfirst($payment) . '</span>';
 				break;
 		}
 	}
@@ -853,7 +889,10 @@ class Carwash
 		$data['label_time'] = __('Total Time', 'carwash');
 
 		$data['status'] = get_post_meta($post->ID, 'carwash_status', true);
-		$data['label_status'] = __('status', 'carwash');
+		$data['label_status'] = __('Status', 'carwash');
+
+		$data['payment'] = get_post_meta($post->ID, 'carwash_payment', true);
+		$data['label_payment'] = __('Payment Status', 'carwash');
 
 		wp_nonce_field('carwash_appointment', 'carwash_appointment_token');
 
@@ -969,6 +1008,7 @@ class Carwash
 			update_post_meta($appointment_id, 'carwash_price', $price);
 			update_post_meta($appointment_id, 'carwash_time', $time);
 			update_post_meta($appointment_id, 'carwash_status', $status);
+			update_post_meta($appointment_id, 'carwash_payment', 'pending');
 
 			$args = array(
 				'to'        => $email,
@@ -984,15 +1024,28 @@ class Carwash
 			$message = __('Successfully submitted! Email sent to ' . $email, 'carwash');
 
 			if (!$is_email_send) {
-				__('Successfully submitted! <span class="text-danger">Failed to send Email to </span>' . $email, 'carwash');
+				$message = __('Successfully submitted! <span class="text-danger">Failed to send Email to </span>' . $email, 'carwash');
 			}
 
-			$response = array(
-				'success'   => true,
-				'message'   => $message,
-				'data'      => null
-			);
+			// Stripe Payment functionality
+			$stripe_payment_url = $this->StripePayment($appointment_id);
 
+			if ($stripe_payment_url) {
+				$response = array(
+					'success'   => true,
+					'message'   => $message,
+					'data'      => array(
+						'stripe_payment_url' => $stripe_payment_url
+					)
+				);
+			} else {
+				$response = array(
+					'success'   => true,
+					'message'   => $message,
+					'data'      => null
+				);
+			}
+			
 			echo json_encode($response);
 		}
 
@@ -1018,6 +1071,56 @@ class Carwash
 		$email_status = wp_mail($to, $subject, $message);
 
 		return $email_status;
+	}
+
+	/**
+	 * Stripe Payment function
+	 *
+	 * @param int $appointment_id
+	 * @return string|bool
+	 */
+	public function StripePayment($appointment_id)
+	{
+		$appointment_title = get_post_field('post_title', $appointment_id);
+
+		$price = get_post_meta($appointment_id, 'carwash_price', true);
+		$price = is_numeric($price) ? $price : 0;
+
+		$package_id = get_post_meta($appointment_id, 'carwash_package_id', true);
+		$package_name = get_post_field('post_title', $package_id);
+
+		Stripe::setApiKey(STRIPE_API_KEY);
+
+		header('Content-Type: application/json');
+
+		$checkout_session = Session::create([
+			'line_items' => [[
+				'price_data' => [
+				'currency' => 'usd',
+				'unit_amount' => $price * 100, // Convert to cent
+				'product_data' => ['name' => $package_name],
+				],
+				'quantity' => 1,
+			]],
+			'mode' => 'payment',
+			'success_url' => site_url() . '/stripe-payment-success',
+			'cancel_url' => site_url() . '/stripe-payment-cancel',
+			'metadata' => [
+				'id' => $appointment_id, 
+				'appointment_id'=> $appointment_title,
+				'package_name' => $package_name
+			]
+		]);
+
+		if ($checkout_session) {
+			// Setting session for storing Stripe session_id
+			session_start();
+			$_SESSION["stripe_session_id"] = $checkout_session->id;
+
+			return $checkout_session->url;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -1109,6 +1212,66 @@ class Carwash
 
 		exit;
 	}
+
+	/**
+	 * Rewrite Rules function for Stripe Success/Cancel page
+	 *
+	 * @return void
+	 */
+	public function carwash_rewrite_rules()
+	{
+		add_rewrite_rule('stripe-payment-success/?$', 'index.php?stripe-payment-success=true', 'top');
+		add_rewrite_rule('stripe-payment-cancel/?$', 'index.php?stripe-payment-cancel=true', 'top');
+	}
+
+	/**
+	 * Function for Registering query variables
+	 *
+	 * @param array $vars
+	 * @return array
+	 */
+	public function carwash_register_query_var($vars)
+	{
+		$vars[] = 'stripe-payment-success';
+		$vars[] = 'stripe-payment-cancel';
+    	return $vars;
+	}
+
+	/**
+	 * Function to view Stripe Success page
+	 *
+	 * @param string $template
+	 * @return string
+	 */
+	public function carwash_stripe_success_template_include($template)
+	{
+		global $wp_query; //Load $wp_query object
+		if (isset($wp_query->query_vars['stripe-payment-success'])) {
+			$page_value = $wp_query->query_vars['stripe-payment-success']; //Check for query var "stripe-payment-success"
+			if ($page_value && $page_value == "true") { //Verify "stripe-payment-success" exists and value is "true".
+				return plugin_dir_path(__FILE__).'src/front/stripe/success.php'; //Load your template or file
+			}
+		}
+		return $template; //Load normal template when $page_value != "true" as a fallback	
+	}
+
+	/**
+	 * Function to view Stripe Cancel page
+	 *
+	 * @param string $template
+	 * @return string
+	 */
+	public function carwash_stripe_cancel_template_include($template)
+	{
+		global $wp_query; //Load $wp_query object
+		if (isset($wp_query->query_vars['stripe-payment-cancel'])) {
+			$page_value = $wp_query->query_vars['stripe-payment-cancel']; //Check for query var "stripe-payment-cancel"
+			if ($page_value && $page_value == "true") { //Verify "stripe-payment-cancel" exists and value is "true".
+				return plugin_dir_path(__FILE__).'src/front/stripe/cancel.php'; //Load your template or file
+			}
+		}
+		return $template; //Load normal template when $page_value != "true" as a fallback
+	}
 }
 
 new Carwash();
@@ -1127,4 +1290,5 @@ function carwash_plugin_activate()
 	add_role('customer', __('Customer', 'carwash'), $caps);
 }
 
+// Hook after plugin is activated
 register_activation_hook(__FILE__, 'carwash_plugin_activate');
